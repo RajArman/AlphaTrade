@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -29,6 +30,8 @@ export default function LoginForm() {
     });
 
   const handleSubmit = async (e) => {
+    console.log("API CALL STARTED");
+    console.log("Submit clicked");
     e.preventDefault();
     try {
       const { data } = await axios.post(
@@ -42,8 +45,10 @@ export default function LoginForm() {
       const { success, message } = data;
       if (success) {
         handleSuccess(message);
+          console.log("Redirecting to dashboard...");
         setTimeout(() => {
-          window.location.href = "http://localhost:5174";
+           console.log("NOW redirecting");
+          window.location.replace("http://localhost:5175/");
         }, 1000);
       } else {
         handleError(message);
