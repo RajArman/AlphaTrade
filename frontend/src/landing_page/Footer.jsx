@@ -10,7 +10,7 @@ export default function Footer() {
                     <div className="footerLinks row mb-5 p-5">
                         <div className="col-3" style={{ fontSize: ".8rem" }}>
                             <img src="media/images/logo.svg" style={{ width: "50%" }} alt="Logo" />
-                            <p>&copy; 2010 - 2025, Zerodha Broking Ltd.</p>
+                            <p>&copy; 2010 - 2025, AlphaTrade Broking Ltd.</p>
                             <p>All rights reserved.</p>
                             <div className="socials">
                                 <i className="fa-brands fa-x-twitter"></i>
@@ -102,10 +102,10 @@ export default function Footer() {
                                     <a href="">Careers</a>
                                 </li>
                                 <li>
-                                    <a href="">Zerodha Cares (CSR)</a>
+                                    <a href="">AlphaTrade Cares (CSR)</a>
                                 </li>
                                 <li>
-                                    <a href="">Zerodha.tech</a>
+                                    <a href="">AlphaTrade.tech</a>
                                 </li>
                                 <li>
                                     <a href="">Open source</a>
@@ -144,7 +144,7 @@ export default function Footer() {
                     <div className="mt-5 text-muted p-5" style={{ fontSize: "0.715rem" }}>
 
                         <p className="px-2">
-                            Zerodha Broking Ltd.: Member of NSE, BSE​ &​ MCX – SEBI Registration no.: INZ000031633 CDSL/NSDL: Depository services through Zerodha Broking Ltd. – SEBI Registration no.: IN-DP-431-2019 Commodity Trading through Zerodha Commodities Pvt. Ltd. MCX: 46025; SEBI Registration no.: INZ000038238 Registered Address: Zerodha Broking Ltd., #153/154, 4th Cross, Dollars Colony, Opp. Clarence Public School, J.P Nagar 4th Phase, Bengaluru - 560078, Karnataka, India. For any complaints pertaining to securities broking please write to <a href="mailto:complaints@zerodha.com">complaints@zerodha.com</a>, for DP related to <a href="mailto:dp@zerodha.com">dp@zerodha.com</a>. Please ensure you carefully read the Risk Disclosure Document as prescribed by SEBI | ICF
+                            AlphaTrade Broking Ltd.: Member of NSE, BSE​ &​ MCX – SEBI Registration no.: INZ000031633 CDSL/NSDL: Depository services through AlphaTrade Broking Ltd. – SEBI Registration no.: IN-DP-431-2019 Commodity Trading through AlphaTrade Commodities Pvt. Ltd. MCX: 46025; SEBI Registration no.: INZ000038238 Registered Address: AlphaTrade Broking Ltd., #153/154, 4th Cross, Dollars Colony, Opp. Clarence Public School, J.P Nagar 4th Phase, Bengaluru - 560078, Karnataka, India. For any complaints pertaining to securities broking please write to <a href="mailto:complaints@AlphaTrade.com">complaints@AlphaTrade.com</a>, for DP related to <a href="mailto:dp@AlphaTrade.com">dp@AlphaTrade.com</a>. Please ensure you carefully read the Risk Disclosure Document as prescribed by SEBI | ICF
                         </p>
                         <p className="px-2">
                             Procedure to file a complaint on <a href="">SEBI SCORES</a>: Register on SCORES portal. Mandatory details for filing complaints on SCORES: Name, PAN, Address, Mobile Number, E-mail ID. Benefits: Effective Communication, Speedy redressal of the grievances
@@ -162,7 +162,7 @@ export default function Footer() {
                             India's largest broker based on networth as per NSE. <a href="">NSE broker factsheet</a>
                         </p>
                         <p className="px-2">
-                            "Prevent unauthorised transactions in your account. Update your mobile numbers/email IDs with your stock brokers. Receive information of your transactions directly from Exchange on your mobile/email at the end of the day. Issued in the interest of investors. KYC is one time exercise while dealing in securities markets - once KYC is done through a SEBI registered intermediary (broker, DP, Mutual Fund etc.), you need not undergo the same process again when you approach another intermediary." Dear Investor, if you are subscribing to an IPO, there is no need to issue a cheque. Please write the Bank account number and sign the IPO application form to authorize your bank to make payment in case of allotment. In case of non allotment the funds will remain in your bank account. As a business we don't give stock tips, and have not authorized anyone to trade on behalf of others. If you find anyone claiming to be part of Zerodha and offering such services, please create a ticket here.
+                            "Prevent unauthorised transactions in your account. Update your mobile numbers/email IDs with your stock brokers. Receive information of your transactions directly from Exchange on your mobile/email at the end of the day. Issued in the interest of investors. KYC is one time exercise while dealing in securities markets - once KYC is done through a SEBI registered intermediary (broker, DP, Mutual Fund etc.), you need not undergo the same process again when you approach another intermediary." Dear Investor, if you are subscribing to an IPO, there is no need to issue a cheque. Please write the Bank account number and sign the IPO application form to authorize your bank to make payment in case of allotment. In case of non allotment the funds will remain in your bank account. As a business we don't give stock tips, and have not authorized anyone to trade on behalf of others. If you find anyone claiming to be part of AlphaTrade and offering such services, please create a ticket here.
                         </p>
                     </div>
                 </div>

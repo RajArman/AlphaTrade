@@ -38,7 +38,7 @@ export default function CreateTicket() {
                                     <div className="right">
                                         <i className="fa-regular fa-circle-user" style={{ padding: "1rem 2rem 1rem 1rem", backgroundColor: "#f7fbfe" }}></i>
                                         <p className="d-inline">
-                                            &nbsp; Your Zerodha Account
+                                            &nbsp; Your AlphaTrade Account
                                         </p>
                                     </div>
                                     <i className="fa-solid fa-chevron-down"></i>
