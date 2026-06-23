@@ -21,7 +21,7 @@ export default function ProductPage() {
             <RightSection
                 imageURL="media/images/console.png" 
                 productName="Console" 
-                productDescription="The central dashboard for your Zerodha account. Gain insights into your trades and investments with in-depth reports and visualisations." 
+                productDescription="The central dashboard for your AlphaTrade account. Gain insights into your trades and investments with in-depth reports and visualisations." 
                 learnMore="" 
             />
             <LeftSection
@@ -50,7 +50,7 @@ export default function ProductPage() {
             />
 
             <p className="text-center fs-5">
-                Want to know more about our technology stack? Check out the <a href="" style={{textDecoration: "none"}}>Zerodha.tech</a> blog.
+                Want to know more about our technology stack? Check out the <a href="" style={{textDecoration: "none"}}>AlphaTrade.tech</a> blog.
             </p>
             <Universe />
         </>

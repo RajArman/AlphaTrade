@@ -1,6 +1,6 @@
 #  Stock Trading & Portfolio Management Platform
 
-A full-stack **stock trading and portfolio management platform** inspired by Zerodha, built using the **MERN stack**.  
+A full-stack **stock trading and portfolio management platform** inspired by AlphaTrade, built using the **MERN stack**.  
 The project includes a **public landing website**, **secure authentication**, and an **interactive trading dashboard** with portfolio analytics.
 
 ## 📋 Table of Contents
@@ -29,7 +29,7 @@ The project includes a **public landing website**, **secure authentication**, an
 - Protected routes for dashboard access
 
 ### Landing Website
-- Zerodha-inspired UI
+- AlphaTrade-inspired UI
 - Responsive pages:
   - Home
   - Products
@@ -244,7 +244,7 @@ If you encounter any issues or have questions, please:
 - Check the existing issues for solutions
 
 ## 🙏 Acknowledgements
-- Inspired by Zerodha
+- Inspired by AlphaTrade
 - React & Express documentation
 - Chart.js
 - MongoDB

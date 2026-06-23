@@ -48,7 +48,7 @@ export default function LoginForm() {
           console.log("Redirecting to dashboard...");
         setTimeout(() => {
            console.log("NOW redirecting");
-          window.location.replace("http://localhost:5175/");
+          window.location.replace("http://localhost:5174/");
         }, 1000);
       } else {
         handleError(message);

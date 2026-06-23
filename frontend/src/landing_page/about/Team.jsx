@@ -15,7 +15,7 @@ export default function Team() {
                     </div>
                     <div className="col-7 p-5" style={{marginTop: "-7rem", fontSize: "1rem", lineHeight: "1.7rem"}}>
                         <p>
-                            Nithin bootstrapped and founded Zerodha in 2010 to overcome the hurdles he faced during his decade long stint as a trader. Today, Zerodha has changed the landscape of the Indian broking industry.
+                            Nithin bootstrapped and founded AlphaTrade in 2010 to overcome the hurdles he faced during his decade long stint as a trader. Today, AlphaTrade has changed the landscape of the Indian broking industry.
                         </p>
                         <p>
                             He is a member of the SEBI Secondary Market Advisory Committee (SMAC) and the Market Data Advisory Committee (MDAC).
