@@ -1,13 +1,17 @@
 export default function Hero() {
+  return (
+    <section className="container py-5 mt-5">
+      <div className="row justify-content-center text-center py-5">
+        <div className="col-lg-8">
+          <h1 className="fw-bold mb-3" style={{ color: "#1f2937" }}>
+            Create Your AlphaTrade Account
+          </h1>
 
-    return (
-        <>
-            <div className="container p-5">
-                <div className="tow p-5 mt-5 text-center">
-                    <h1 className="fs-2">Open a free demat and trading account online</h1>
-                    <h3 className="text-muted fs-4 mt-3">Start investing brokerage free and join a community of 1.6+ crore investors and traders</h3>
-                </div>
-            </div>
-        </>
-    );
+          <p className="text-muted fs-5">
+            Start tracking your portfolio, holdings, orders, and funds through a secure investment dashboard.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
 }
