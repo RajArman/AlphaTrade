@@ -1,59 +1,86 @@
 import { Link } from "react-router-dom";
 
 export default function Navbar() {
+  return (
+    <nav
+      className="navbar navbar-expand-lg bg-white border-bottom fixed-top shadow-sm"
+      style={{ zIndex: 1000 }}
+    >
+      <div className="container">
 
-    return (
-        <>
-            <div>
-               <nav className="navbar navbar-expand-lg border-bottom fixed-top" style={{ backgroundColor: "white" }}>
-    <div className="container px-5 py-2">
-        {/* Updated branding container to match your original alignment */}
-        <div style={{ width: "25%", display: "flex", alignItems: "center" }}>
-            <Link className="navbar-brand d-flex align-items-center" to="/" style={{ fontWeight: "700", fontSize: "1.4rem", color: "#2383e2", letterSpacing: "0.5px", margin: 0 }}>
-                <i className="fa-solid fa-chart-line me-2"style={{ color: "#2383e2" }}></i>
-                <span>AlphaTrade</span>
-            </Link>
+        <Link
+          className="navbar-brand d-flex align-items-center fw-bold"
+          to="/"
+          style={{
+            fontSize: "1.5rem",
+            color: "#2563eb",
+            letterSpacing: "0.5px",
+          }}
+        >
+          <i
+            className="fa-solid fa-chart-line me-2"
+            style={{ color: "#2563eb" }}
+          ></i>
+
+          AlphaTrade
+        </Link>
+
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div
+          className="collapse navbar-collapse"
+          id="navbarNav"
+        >
+          <ul className="navbar-nav ms-auto align-items-lg-center">
+
+            <li className="nav-item mx-lg-2">
+              <Link className="nav-link" to="/about">
+                About
+              </Link>
+            </li>
+
+            <li className="nav-item mx-lg-2">
+              <Link className="nav-link" to="/products">
+                Features
+              </Link>
+            </li>
+
+            <li className="nav-item mx-lg-2">
+              <Link className="nav-link" to="/pricing">
+                Platform
+              </Link>
+            </li>
+
+            <li className="nav-item mx-lg-2">
+              <Link className="nav-link" to="/support">
+                Contact
+              </Link>
+            </li>
+
+            <li className="nav-item ms-lg-3 mt-3 mt-lg-0">
+              <Link
+                to="/signup"
+                className="btn btn-primary px-4"
+                style={{
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                }}
+              >
+                Get Started
+              </Link>
+            </li>
+
+          </ul>
         </div>
 
-
-                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
-                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-
-                            <form className="d-flex ms-auto" role="search">
-                                <ul className="navbar-nav mb-lg-0">
-                                    <li className="nav-item">
-                                        <Link className="nav-link active" aria-current="page" to="/signup">
-                                            Signup
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link active" aria-current="page" to="/about">
-                                            About
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link active" aria-current="page" to="products">
-                                            Products
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link active" aria-disabled="true" to="pricing">
-                                            Pricing
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link active" aria-disabled="true" to="support">
-                                            Support
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </form>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </>
-    );
+      </div>
+    </nav>
+  );
 }
