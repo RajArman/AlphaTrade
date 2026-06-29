@@ -9,7 +9,9 @@ export default function Footer() {
                 <div className="container p-5mt-5" >
                     <div className="footerLinks row mb-5 p-5">
                         <div className="col-3" style={{ fontSize: ".8rem" }}>
-                            <img src="media/images/logo.svg" style={{ width: "50%" }} alt="Logo" />
+                          <h3 style={{ fontWeight: "700", fontSize: "1.4rem", color: "#2383e2", letterSpacing: "0.5px", marginBottom: "1rem" }}>
+        AlphaTrade
+    </h3>
                             <p>&copy; 2010 - 2025, AlphaTrade Broking Ltd.</p>
                             <p>All rights reserved.</p>
                             <div className="socials">
