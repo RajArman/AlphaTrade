@@ -1,33 +1,41 @@
 export default function RightSection({
-    imageURL,
-    productName,
-    productDescription,
-    learnMore,
+  imageURL,
+  productName,
+  productDescription,
+  learnMore,
 }) {
+  return (
+    <section className="container py-5">
+      <div className="row align-items-center g-5">
+        <div className="col-lg-5 order-2 order-lg-1">
+          <h2 className="fw-bold mb-4" style={{ color: "#1f2937" }}>
+            {productName}
+          </h2>
 
-    return (
-        <>
-            <div className="container p-5" style={{marginTop: "-11rem", marginBottom: "-10rem"}}>
-                <div className="row p-5 d-flex flex-wrap">
-                    <div className="col-4 p-3 d-flex flex-column justify-content-center">
-                        <h1 className="fs-3 mb-4">{productName}</h1>
-                        <p style={{fontSize: "1.1rem", lineHeight: "2rem"}}>
-                            {productDescription}
-                        </p>
+          <p
+            className="text-muted mb-4"
+            style={{ fontSize: "1.05rem", lineHeight: "1.8" }}
+          >
+            {productDescription}
+          </p>
 
-                        <div className="d-flex flex-wrap">
-                            <a href={learnMore} style={{ marginLeft: "5rem", textDecoration: "none" }}>Learn More <i className="fa-solid fa-arrow-right"></i></a>
-                        </div>
+          <a
+            href={learnMore || ""}
+            style={{ textDecoration: "none", fontWeight: "600" }}
+          >
+            Learn More <i className="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
 
-                    </div>
-
-                    <div className="col-1"></div>
-
-                    <div className="col-7 p-5">
-                        <img src={imageURL} className="img-fluid" alt={productName} />
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+        <div className="col-lg-7 text-center order-1 order-lg-2">
+          <img
+            src={imageURL}
+            className="img-fluid"
+            alt={productName}
+            style={{ maxWidth: "620px" }}
+          />
+        </div>
+      </div>
+    </section>
+  );
 }
