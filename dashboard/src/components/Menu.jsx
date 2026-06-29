@@ -1,14 +1,24 @@
-import { useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import "./Menu.css";
 import GeneralContext from "./GeneralContext";
 
-import { Menu as MuiMenu, MenuItem, Avatar, ListItemIcon, Divider } from "@mui/material";
-import { Logout, Person } from "@mui/icons-material";
+import {
+  Menu as MuiMenu,
+  MenuItem,
+  Avatar,
+  ListItemIcon,
+  Divider,
+} from "@mui/material";
+import { Logout, Person, DarkMode, LightMode } from "@mui/icons-material";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(
+    localStorage.getItem("theme") === "dark"
+  );
+
   const { user } = useContext(GeneralContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -29,8 +39,18 @@ const Menu = () => {
     { label: "Holdings", path: "/holdings" },
     { label: "Positions", path: "/positions" },
     { label: "Funds", path: "/funds" },
-    { label: "Insights", path: "/apps" },
+    { label: "Insights", path: "/insights" },
   ];
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.remove("dark-mode");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDarkMode]);
 
   const handleMenuClick = (index) => {
     setSelectedMenu(index);
@@ -42,6 +62,11 @@ const Menu = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const toggleTheme = () => {
+    setIsDarkMode((prev) => !prev);
+    handleClose();
   };
 
   const handleLogout = async () => {
@@ -92,10 +117,10 @@ const Menu = () => {
         </div>
 
         <span
+          className="brand-text"
           style={{
             fontWeight: "700",
             fontSize: "1.1rem",
-            color: "#1f2937",
           }}
         >
           AlphaTrade
@@ -111,7 +136,11 @@ const Menu = () => {
                 to={item.path}
                 onClick={() => handleMenuClick(index)}
               >
-                <p className={selectedMenu === index ? activeMenuClass : menuClass}>
+                <p
+                  className={
+                    selectedMenu === index ? activeMenuClass : menuClass
+                  }
+                >
                   {item.label}
                 </p>
               </Link>
@@ -153,31 +182,12 @@ const Menu = () => {
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}
-          onClick={handleClose}
           PaperProps={{
             elevation: 0,
             sx: {
               overflow: "visible",
               filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.22))",
               mt: 1.5,
-              "& .MuiAvatar-root": {
-                width: 32,
-                height: 32,
-                ml: -0.5,
-                mr: 1,
-              },
-              "&:before": {
-                content: '""',
-                display: "block",
-                position: "absolute",
-                top: 0,
-                right: 14,
-                width: 10,
-                height: 10,
-                bgcolor: "background.paper",
-                transform: "translateY(-50%) rotate(45deg)",
-                zIndex: 0,
-              },
             },
           }}
           transformOrigin={{ horizontal: "right", vertical: "top" }}
@@ -188,6 +198,17 @@ const Menu = () => {
               <Person fontSize="small" />
             </ListItemIcon>
             Profile
+          </MenuItem>
+
+          <MenuItem onClick={toggleTheme}>
+            <ListItemIcon>
+              {isDarkMode ? (
+                <LightMode fontSize="small" />
+              ) : (
+                <DarkMode fontSize="small" />
+              )}
+            </ListItemIcon>
+            {isDarkMode ? "Light Mode" : "Dark Mode"}
           </MenuItem>
 
           <Divider />
