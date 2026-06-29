@@ -1,70 +1,57 @@
-
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import HeroForLogin from "./HeroForLogin";
 
 export default function LoginForm() {
-  // const navigate = useNavigate(); // As we have to navigate to different app we don't need this
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
   });
+
   const { email, password } = inputValue;
+
   const handleOnChange = (e) => {
     const { name, value } = e.target;
+
     setInputValue({
       ...inputValue,
       [name]: value,
     });
   };
 
-  const handleError = (err) =>
-    toast.error(err, {
-      position: "bottom-left",
-    });
-  const handleSuccess = (msg) =>
-    toast.success(msg, {
-      position: "bottom-left",
-    });
-
   const handleSubmit = async (e) => {
-    console.log("API CALL STARTED");
-    console.log("Submit clicked");
     e.preventDefault();
+
     try {
       const { data } = await axios.post(
         "http://localhost:3002/auth/login",
-        {
-          ...inputValue,
-        },
+        { ...inputValue },
         { withCredentials: true }
       );
-      console.log(data);
-      const { success, message } = data;
-      if (success) {
-        handleSuccess(message);
-          console.log("Redirecting to dashboard...");
+
+      if (data.success) {
+        toast.success(data.message || "Logged in successfully", {
+          position: "bottom-right",
+        });
+
         setTimeout(() => {
-           console.log("NOW redirecting");
           window.location.replace("http://localhost:5174/");
         }, 1000);
       } else {
-        handleError(message);
+        toast.error(data.message || "Login failed", {
+          position: "bottom-left",
+        });
       }
     } catch (error) {
-      console.log(error);
-      if (error.response && error.response.data && error.response.data.message) { // if specific error occured
-        handleError(error.response.data.message);
-      }
-      // If the server crashed or network failed
-      else {
-        handleError("Login failed. Please try again.");
-      }
+      toast.error(
+        error.response?.data?.message || "Login failed. Please try again.",
+        { position: "bottom-left" }
+      );
     }
+
     setInputValue({
-      ...inputValue,
       email: "",
       password: "",
     });
@@ -73,29 +60,46 @@ export default function LoginForm() {
   return (
     <>
       <HeroForLogin />
-      <div className="container p-5" style={{ marginTop: "-9rem" }}>
-        <div className="row p-5 d-flex flex-wrap">
-          <div className="col-5 p-3 d-flex flex-column justify-content-center">
-            <h1 className="fs-3 mb-4">Login</h1>
 
-            <div className="form_container">
+      <section className="container pb-5 mb-5">
+        <div className="row align-items-center justify-content-center g-5">
+          <div className="col-lg-5">
+            <div
+              className="p-4 p-md-5 shadow-sm"
+              style={{
+                borderRadius: "18px",
+                backgroundColor: "#ffffff",
+                border: "1px solid #e5e7eb",
+              }}
+            >
+              <h2 className="fw-bold mb-2" style={{ color: "#1f2937" }}>
+                Login
+              </h2>
+
+              <p className="text-muted mb-4">
+                Access your AlphaTrade dashboard and continue tracking your
+                portfolio.
+              </p>
+
               <form onSubmit={handleSubmit}>
-                <div className="mb-2">
-                  <label htmlFor="email" style={{ fontSize: "1.1rem" }}>Email</label>
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Email</label>
                   <input
-                    style={{ width: "100%", height: "2.5rem" }}
+                    className="form-control"
                     type="email"
                     name="email"
                     value={email}
                     placeholder="Enter your email"
                     onChange={handleOnChange}
                     required
+                    style={{ height: "46px" }}
                   />
                 </div>
-                <div className="mb-3">
-                  <label htmlFor="password" style={{ fontSize: "1.1rem" }}>Password</label>
+
+                <div className="mb-4">
+                  <label className="form-label fw-semibold">Password</label>
                   <input
-                    style={{ width: "100%", height: "2.5rem" }}
+                    className="form-control"
                     type="password"
                     name="password"
                     value={password}
@@ -103,26 +107,44 @@ export default function LoginForm() {
                     onChange={handleOnChange}
                     required
                     minLength={3}
+                    style={{ height: "46px" }}
                   />
                 </div>
-                <button type="submit" className="p-2 btn fs-5 mb-2" style={{ width: "37%", margin: "0 auto", backgroundColor: "#387ed1", color: "white", borderRadius: "3px" }}>Submit</button>
-                <br />
-                <span>
-                  Already have an account? <Link to={"/signup"}>Signup</Link>
-                </span>
-              </form>
-              <ToastContainer />
-            </div>
 
+                <button
+                  type="submit"
+                  className="btn btn-primary w-100 py-2"
+                  style={{
+                    borderRadius: "10px",
+                    fontWeight: "600",
+                    fontSize: "1rem",
+                  }}
+                >
+                  Login
+                </button>
+
+                <p className="text-center mt-4 mb-0">
+                  Don't have an account?{" "}
+                  <Link to="/signup" style={{ textDecoration: "none" }}>
+                    Sign up
+                  </Link>
+                </p>
+              </form>
+            </div>
           </div>
 
-          {/* <div className="col-1"></div> */}
-
-          <div className="col-7 p-5">
-            <img src="/media/images/kite.svg" className="img-fluid" alt="kite" />
+          <div className="col-lg-6 text-center">
+            <img
+              src="/media/images/kite.svg"
+              className="img-fluid"
+              alt="Dashboard"
+              style={{ maxWidth: "500px" }}
+            />
           </div>
         </div>
-      </div>
+
+        <ToastContainer />
+      </section>
     </>
   );
 }

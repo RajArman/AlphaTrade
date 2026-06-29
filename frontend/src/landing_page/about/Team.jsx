@@ -1,34 +1,62 @@
 export default function Team() {
+  return (
+    <section className="container py-5 mb-5">
+      <div className="row justify-content-center text-center mb-5">
+        <div className="col-lg-8">
+          <h2 className="fw-bold" style={{ color: "#1f2937" }}>
+            Project Developer
+          </h2>
 
-    return (
-        <>
-            <div className="container p-5" style={{marginTop: "-11rem"}}>
-                <div className="row p-5 mb-5">
-                    <h1 className="text-center fs-3">People</h1>
+          <p className="text-muted fs-5">
+            Designed and developed as a full-stack portfolio monitoring project.
+          </p>
+        </div>
+      </div>
 
-                </div>
-                <div className="row p-5 mt-5 text-muted mx-5" style={{fontSize: "1rem", lineHeight: "1.8", display: "flex", justifyContent: "space-between"}}>
-                    <div className="col-5 p-5 text-center" style={{marginTop: "-8rem"}}>
-                       <img src="media/images/nithinKamath.jpg" alt="nithinKamath" style={{width: "90%", borderRadius: "100%"}} />
-                       <p className="fs-5 mt-4">Nithin Kamath</p>
-                       <p>Founder, CEO</p>
-                    </div>
-                    <div className="col-7 p-5" style={{marginTop: "-7rem", fontSize: "1rem", lineHeight: "1.7rem"}}>
-                        <p>
-                            Nithin bootstrapped and founded AlphaTrade in 2010 to overcome the hurdles he faced during his decade long stint as a trader. Today, AlphaTrade has changed the landscape of the Indian broking industry.
-                        </p>
-                        <p>
-                            He is a member of the SEBI Secondary Market Advisory Committee (SMAC) and the Market Data Advisory Committee (MDAC).
-                        </p>
-                        <p>
-                            Playing basketball is his zen.
-                        </p>
-                        <p>
-                            Connect on <a href="" style={{textDecoration: "none"}}>Homepage</a> / <a href="" style={{textDecoration: "none"}}>TradingQnA</a> / <a href="" style={{textDecoration: "none"}}>Twitter</a>
-                        </p>
-                    </div>
-                </div>
+      <div className="row justify-content-center">
+        <div className="col-lg-8">
+          <div
+            className="p-4 p-md-5 shadow-sm"
+            style={{
+              borderRadius: "18px",
+              backgroundColor: "#ffffff",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <h3 className="fw-bold mb-3">Arman Raj</h3>
+
+            <p className="text-muted mb-4">
+              B.Tech Electronics and Communication Engineering student at BIT
+              Mesra. This project was built to gain hands-on experience with
+              full-stack development, authentication, database integration, and
+              financial dashboard design.
+            </p>
+
+            <div className="row g-4">
+              <div className="col-md-4">
+                <h5 className="fw-semibold">Frontend</h5>
+                <p className="text-muted mb-0">
+                  React, routing, reusable components, responsive UI.
+                </p>
+              </div>
+
+              <div className="col-md-4">
+                <h5 className="fw-semibold">Backend</h5>
+                <p className="text-muted mb-0">
+                  Node.js, Express APIs, authentication middleware.
+                </p>
+              </div>
+
+              <div className="col-md-4">
+                <h5 className="fw-semibold">Database</h5>
+                <p className="text-muted mb-0">
+                  MongoDB schemas for users, holdings, orders, and funds.
+                </p>
+              </div>
             </div>
-        </>
-    );
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

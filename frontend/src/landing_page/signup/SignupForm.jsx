@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
 export default function SignupForm() {
-  // const navigate = useNavigate(); // As we have to navigate to different app we don't need this
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
     username: "",
   });
+
   const { email, password, username } = inputValue;
+
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setInputValue({
@@ -19,118 +20,141 @@ export default function SignupForm() {
     });
   };
 
-  const handleError = (err) =>
-    toast.error(err, {
-      position: "bottom-left",
-    });
-  const handleSuccess = (msg) =>
-    toast.success(msg, {
-      position: "bottom-right",
-    });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const { data } = await axios.post(
         "http://localhost:3002/auth/signup",
-        {
-          ...inputValue,
-        },
+        { ...inputValue },
         { withCredentials: true }
       );
-      console.log(data);
-      const { success, message } = data;
-      if (success) {
-        handleSuccess(message);
+
+      if (data.success) {
+        toast.success(data.message || "Account created successfully", {
+          position: "bottom-right",
+        });
+
         setTimeout(() => {
           window.location.href = "http://localhost:5173";
         }, 1000);
       } else {
-        handleError(message);
+        toast.error(data.message || "Signup failed", {
+          position: "bottom-left",
+        });
       }
     } catch (error) {
-      console.log(error);
-      if (error.response && error.response.data && error.response.data.message) { // if specific error occured
-        handleError(error.response.data.message);
-      }
-      // If the server crashed or network failed
-      else {
-        handleError("Signup failed. Please try again.");
-      }
+      toast.error(
+        error.response?.data?.message || "Signup failed. Please try again.",
+        { position: "bottom-left" }
+      );
     }
+
     setInputValue({
-      ...inputValue,
       email: "",
       password: "",
       username: "",
     });
   };
+
   return (
-    <>
-      <div className="container p-5" style={{ marginTop: "-10rem" }}>
-        <div className="row p-5 d-flex flex-wrap">
-          <div className="col-7 p-5">
-            <img src="media/images/signupimg1.svg" className="img-fluid" alt="signup" />
-          </div>
-          <div className="col-4  p-3 d-flex flex-column justify-content-center">
-            <h1 className="fs-3 mb-4">Signup now</h1>
+    <section className="container pb-5 mb-5">
+      <div className="row align-items-center justify-content-center g-5">
+        <div className="col-lg-6 text-center">
+          <img
+            src="media/images/signupimg1.svg"
+            className="img-fluid"
+            alt="Signup"
+            style={{ maxWidth: "480px" }}
+          />
+        </div>
 
+        <div className="col-lg-5">
+          <div
+            className="p-4 p-md-5 shadow-sm"
+            style={{
+              borderRadius: "18px",
+              backgroundColor: "#ffffff",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <h2 className="fw-bold mb-2" style={{ color: "#1f2937" }}>
+              Sign up
+            </h2>
 
-            <div className="form_container">
-              <form onSubmit={handleSubmit}>
-                <div className="mb-2">
-                  <label htmlFor="email" style={{ fontSize: "1.1rem" }}>Email</label>
-                  <br />
-                  <input
-                    style={{ width: "100%", height: "2.5rem" }}
-                    type="email"
-                    name="email"
-                    value={email}
-                    placeholder="Enter your email"
-                    onChange={handleOnChange}
-                    required
-                  />
-                </div>
-                <div className="mb-2">
-                  <label htmlFor="username" style={{ fontSize: "1.1rem" }}>Username</label>
-                  <br />
-                  <input
-                    style={{ width: "100%", height: "2.5rem" }}
-                    type="text"
-                    name="username"
-                    value={username}
-                    placeholder="Enter your username"
-                    onChange={handleOnChange}
-                    required
-                    minLength={3}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="password" style={{ fontSize: "1.1rem" }}>Password</label>
-                  <br />
-                  <input
-                    style={{ width: "100%", height: "2.5rem" }}
-                    type="password"
-                    name="password"
-                    value={password}
-                    placeholder="Enter your password"
-                    onChange={handleOnChange}
-                    required
-                    minLength={3}
-                  />
-                </div>
-                <button type="submit" className="p-2 btn fs-5 mb-2" style={{ width: "37%", margin: "0 auto", backgroundColor: "#387ed1", color: "white", borderRadius: "3px" }}>Submit</button>
-                <br />
-                <span>
-                  Already have an account? <Link to={"/login"}>Login</Link>
-                </span>
-              </form>
-              <ToastContainer />
-            </div>
+            <p className="text-muted mb-4">
+              Create your account and access your AlphaTrade dashboard.
+            </p>
 
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label fw-semibold">Email</label>
+                <input
+                  className="form-control"
+                  type="email"
+                  name="email"
+                  value={email}
+                  placeholder="Enter your email"
+                  onChange={handleOnChange}
+                  required
+                  style={{ height: "46px" }}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label fw-semibold">Username</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="username"
+                  value={username}
+                  placeholder="Choose a username"
+                  onChange={handleOnChange}
+                  required
+                  minLength={3}
+                  style={{ height: "46px" }}
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="form-label fw-semibold">Password</label>
+                <input
+                  className="form-control"
+                  type="password"
+                  name="password"
+                  value={password}
+                  placeholder="Create a password"
+                  onChange={handleOnChange}
+                  required
+                  minLength={3}
+                  style={{ height: "46px" }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary w-100 py-2"
+                style={{
+                  borderRadius: "10px",
+                  fontWeight: "600",
+                  fontSize: "1rem",
+                }}
+              >
+                Create Account
+              </button>
+
+              <p className="text-center mt-4 mb-0">
+                Already have an account?{" "}
+                <Link to="/login" style={{ textDecoration: "none" }}>
+                  Login
+                </Link>
+              </p>
+            </form>
           </div>
         </div>
       </div>
-    </>
-  )
+
+      <ToastContainer />
+    </section>
+  );
 }
