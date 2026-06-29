@@ -210,6 +210,44 @@ app.use(cookieParser());
 //   res.send("Positions Done");
 // });
 
+app.get("/dashboardSummary", verifyUser, async (req, res) => {
+  try {
+    const holdings = await HoldingsModel.find({ user: req.user._id });
+
+    const totalHoldings = holdings.length;
+
+    const investment = holdings.reduce((sum, stock) => {
+      return sum + stock.avg * stock.qty;
+    }, 0);
+
+    const currentValue = holdings.reduce((sum, stock) => {
+      return sum + stock.price * stock.qty;
+    }, 0);
+
+    const profitLoss = currentValue - investment;
+
+    const profitLossPercent =
+      investment > 0 ? (profitLoss / investment) * 100 : 0;
+
+    res.json({
+      success: true,
+      totalHoldings,
+      investment,
+      currentValue,
+      profitLoss,
+      profitLossPercent,
+      availableMargin: 3740,
+      marginsUsed: 0,
+      openingBalance: 3740,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch dashboard summary",
+    });
+  }
+});
+
 app.get("/allHoldings", verifyUser, async (req, res) => {
   let allHoldings = await HoldingsModel.find({user: req.user._id});
   res.json(allHoldings);
