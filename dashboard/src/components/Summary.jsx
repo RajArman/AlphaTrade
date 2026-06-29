@@ -3,8 +3,7 @@ import axios from "axios";
 import GeneralContext from "./GeneralContext";
 
 const Summary = () => {
-  const { user } = useContext(GeneralContext);
-
+  const { user, orders } = useContext(GeneralContext);
   const [summary, setSummary] = useState(null);
 
   useEffect(() => {
@@ -32,6 +31,8 @@ const Summary = () => {
       maximumFractionDigits: 2,
     });
   };
+
+  const recentOrders = orders ? orders.slice(-4).reverse() : [];
 
   if (!summary) {
     return <p>Loading portfolio summary...</p>;
@@ -100,6 +101,46 @@ const Summary = () => {
             </p>
           </div>
         </div>
+
+        <hr className="divider" />
+      </div>
+
+      <div className="section">
+        <span>
+          <p>Recent Transactions</p>
+        </span>
+
+        {recentOrders.length === 0 ? (
+          <p style={{ color: "#8a8a8a", fontSize: "0.9rem" }}>
+            No recent transactions yet.
+          </p>
+        ) : (
+          <div className="order-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Qty.</th>
+                  <th>Price</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {recentOrders.map((order, index) => (
+                  <tr key={index}>
+                    <td>{order.name}</td>
+                    <td>{order.qty}</td>
+                    <td>{formatNumber(order.price)}</td>
+                    <td className={order.mode === "BUY" ? "profit" : "loss"}>
+                      {order.mode}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <hr className="divider" />
       </div>
