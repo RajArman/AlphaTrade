@@ -1,154 +1,127 @@
-import { useState, useEffect, useContext } from "react";
-// import axios from "axios";
+import { useEffect, useState, useContext } from "react";
 import { VerticalGraph } from "./VerticalGraph";
-
-// import { holdings } from "../data/data";
-
 import GeneralContext from "./GeneralContext";
 
 const Holdings = () => {
-    // const [allHoldings, setAllHoldings] = useState([]);
-    const { holdings } = useContext(GeneralContext);
+  const { holdings } = useContext(GeneralContext);
 
-    const [portfolioSummary, setPortfolioSummary] = useState({
-        totalInvestment: 0,
-        currentValue: 0,
-        totalPL: 0,
-        pnlPercent: 0
+  const [portfolioSummary, setPortfolioSummary] = useState({
+    totalInvestment: 0,
+    currentValue: 0,
+    totalPL: 0,
+    pnlPercent: 0,
+  });
+
+  useEffect(() => {
+    let investment = 0;
+    let currVal = 0;
+
+    holdings.forEach((stock) => {
+      investment += stock.avg * stock.qty;
+      currVal += stock.price * stock.qty;
     });
 
-    // const { refreshCount } = useContext(GeneralContext);
+    setPortfolioSummary({
+      totalInvestment: investment,
+      currentValue: currVal,
+      totalPL: currVal - investment,
+      pnlPercent:
+        investment === 0 ? 0 : ((currVal - investment) / investment) * 100,
+    });
+  }, [holdings]);
 
-    // useEffect(() => {
-    //     axios.get("http://localhost:3002/allHoldings", { withCredentials: true }).then((res) => {
-    //         console.log(res.data);
-    //         setAllHoldings(res.data);
+  const formatNumber = (num) => {
+    return num.toLocaleString("en-IN", {
+      maximumFractionDigits: 2,
+    });
+  };
 
-    //         // Calculate totals dynamically from the fetched data
-    //         let investment = 0;
-    //         let currVal = 0;
+  const labels = holdings.map((stock) => stock.name);
 
-    //         res.data.forEach(stock => {
-    //             investment += stock.avg * stock.qty;
-    //             currVal += stock.price * stock.qty;
-    //         });
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: "Current Value",
+        data: holdings.map((stock) => stock.price * stock.qty),
+        backgroundColor: "rgba(37, 99, 235, 0.6)",
+      },
+    ],
+  };
 
-    //         setPortfolioSummary({
-    //             totalInvestment: investment,
-    //             currentValue: currVal,
-    //             totalPL: currVal - investment,
-    //             pnlPercent: investment === 0 ? 0 : ((currVal - investment) / investment) * 100
-    //         });
+  return (
+    <>
+      <h3 className="title">Holdings ({holdings.length})</h3>
 
-    //     }).catch((err) => {
-    //         console.error("Error fetching holdings:", err);
-    //     });
-    // }, [refreshCount]); // refreshCount added to dependency array
+      <div className="row">
+        <div className="col">
+          <h5>{formatNumber(portfolioSummary.totalInvestment)}</h5>
+          <p>Total Investment</p>
+        </div>
 
-    // 2. Recalculate summary only when 'holdings' data updates
-    useEffect(() => {
-        let investment = 0;
-        let currVal = 0;
+        <div className="col">
+          <h5>{formatNumber(portfolioSummary.currentValue)}</h5>
+          <p>Current Value</p>
+        </div>
 
-        holdings.forEach(stock => {
-            investment += stock.avg * stock.qty;
-            currVal += stock.price * stock.qty;
-        });
+        <div className="col">
+          <h5 className={portfolioSummary.totalPL >= 0 ? "profit" : "loss"}>
+            {formatNumber(portfolioSummary.totalPL)} (
+            {portfolioSummary.pnlPercent.toFixed(2)}%)
+          </h5>
+          <p>Overall P&amp;L</p>
+        </div>
+      </div>
 
-        setPortfolioSummary({
-            totalInvestment: investment,
-            currentValue: currVal,
-            totalPL: currVal - investment,
-            pnlPercent: investment === 0 ? 0 : ((currVal - investment) / investment) * 100
-        });
-    }, [holdings]);
+      <div className="order-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Instrument</th>
+              <th>Qty.</th>
+              <th>Avg. cost</th>
+              <th>LTP</th>
+              <th>Cur. val</th>
+              <th>P&amp;L</th>
+              <th>Net chg.</th>
+              <th>Day chg.</th>
+            </tr>
+          </thead>
 
-    const labels = holdings.map((subArray) => subArray["name"]);
+          <tbody>
+            {holdings.map((stock, index) => {
+              const curValue = stock.price * stock.qty;
+              const profitLoss = curValue - stock.avg * stock.qty;
+              const isProfit = profitLoss >= 0;
+              const profClass = isProfit ? "profit" : "loss";
+              const dayClass = stock.day >= 0 ? "profit" : "loss";
 
-    const data = {
-        labels,
-        datasets: [
-            {
-                label: "Stock Price",
-                data: holdings.map((stock) => stock.price),
-                backgroundColor: "rgba(255, 99, 132, 0.5)",
-            },
-        ],
-    };
+              return (
+                <tr key={index}>
+                  <td>{stock.name}</td>
+                  <td>{stock.qty}</td>
+                  <td>{formatNumber(stock.avg)}</td>
+                  <td>{formatNumber(stock.price)}</td>
+                  <td>{formatNumber(curValue)}</td>
+                  <td className={profClass}>{formatNumber(profitLoss)}</td>
+                  <td className={profClass}>
+                    {stock.net > 0 ? "+" : ""}
+                    {stock.net.toFixed(2)}%
+                  </td>
+                  <td className={dayClass}>
+                    {stock.day > 0 ? "+" : ""}
+                    {stock.day.toFixed(2)}%
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
-    return (
-        <>
-            {/* dynamic length */}
-            <h3 className="title">Holdings ({holdings.length})</h3>
-
-            <div className="order-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Instrument</th>
-                            <th>Qty.</th>
-                            <th>Avg. cost</th>
-                            <th>LTP</th>
-                            <th>Cur. val</th>
-                            <th>P&L</th>
-                            <th>Net chg.</th>
-                            <th>Day chg.</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {holdings.map((stock, index) => {
-                            const curValue = stock.price * stock.qty;
-                            const isProfit = curValue - stock.avg * stock.qty >= 0.0;
-                            const profClass = isProfit ? "profit" : "loss";
-                            const dayClass = stock.day >= 0 ? "profit" : "loss";
-
-                            return (
-                                <tr key={index}>
-                                    <td>{stock.name}</td>
-                                    <td>{stock.qty}</td>
-                                    <td>{stock.avg.toFixed(2)}</td>
-                                    <td>{stock.price.toFixed(2)}</td>
-                                    <td>{curValue.toFixed(2)}</td>
-                                    <td className={profClass}>
-                                        {(curValue - stock.avg * stock.qty).toFixed(2)}
-                                    </td>
-                                    <td className={profClass}>
-                                        {stock.net > 0 ? "+": ""}{stock.net.toFixed(2)}%
-                                    </td>
-                                    <td className={dayClass}>
-                                        {stock.day > 0 ? "+" : ""}{stock.day.toFixed(2)}%
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-
-            <div className="row">
-                <div className="col">
-                    <h5>
-                        {portfolioSummary.totalInvestment.toFixed(2)}
-                    </h5>
-                    <p>Total investment</p>
-                </div>
-                <div className="col">
-                    <h5>
-                        {portfolioSummary.currentValue.toFixed(2)}
-                    </h5>
-                    <p>Current value</p>
-                </div>
-                <div className="col">
-                    <h5 className={portfolioSummary.totalPL >= 0 ? "profit" : "loss"}>
-                        {portfolioSummary.totalPL.toFixed(2)} ({portfolioSummary.pnlPercent.toFixed(2)}%)
-                    </h5>
-                    <p>P&L</p>
-                </div>
-            </div>
-            <VerticalGraph data={data} />
-        </>
-    );
+      <VerticalGraph data={data} />
+    </>
+  );
 };
 
 export default Holdings;
