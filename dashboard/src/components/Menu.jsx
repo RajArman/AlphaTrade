@@ -4,30 +4,44 @@ import axios from "axios";
 import "./Menu.css";
 import GeneralContext from "./GeneralContext";
 
-// Material UI Imports
 import { Menu as MuiMenu, MenuItem, Avatar, ListItemIcon, Divider } from "@mui/material";
 import { Logout, Person } from "@mui/icons-material";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
-  
-  // 1. Get user from Context (No more axios here!)
   const { user } = useContext(GeneralContext);
 
-  // Material UI Menu State
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const handleClick = (event) => {
+  const menuClass = "menu";
+  const activeMenuClass = "menu selected";
+
+  const initials = user?.username
+    ? user.username.charAt(0).toUpperCase()
+    : "U";
+
+  const displayUsername = user?.username || "User";
+
+  const navItems = [
+    { label: "Overview", path: "/" },
+    { label: "Orders", path: "/orders" },
+    { label: "Holdings", path: "/holdings" },
+    { label: "Positions", path: "/positions" },
+    { label: "Funds", path: "/funds" },
+    { label: "Insights", path: "/apps" },
+  ];
+
+  const handleMenuClick = (index) => {
+    setSelectedMenu(index);
+  };
+
+  const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleMenuClick = (index) => {
-    setSelectedMenu(index);
   };
 
   const handleLogout = async () => {
@@ -37,7 +51,9 @@ const Menu = () => {
         {},
         { withCredentials: true }
       );
+
       handleClose();
+
       setTimeout(() => {
         window.location.href = "http://localhost:5174";
       }, 500);
@@ -46,67 +62,93 @@ const Menu = () => {
     }
   };
 
-  const menuClass = "menu";
-  const activeMenuClass = "menu selected";
-  
-  // Helper for initials
-  const initials = user && user.username ? user.username.charAt(0).toUpperCase() : "U";
-  const displayUsername = user ? user.username : "User";
-
   return (
     <div className="menu-container">
-      <img src="logo.png" style={{ width: "50px" }} alt="Logo" />
+      <Link
+        to="/"
+        onClick={() => handleMenuClick(0)}
+        style={{
+          textDecoration: "none",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+        }}
+      >
+        <div
+          style={{
+            width: "38px",
+            height: "38px",
+            borderRadius: "12px",
+            background: "#2563eb",
+            color: "white",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontWeight: "700",
+            fontSize: "1rem",
+          }}
+        >
+          AT
+        </div>
+
+        <span
+          style={{
+            fontWeight: "700",
+            fontSize: "1.1rem",
+            color: "#1f2937",
+          }}
+        >
+          AlphaTrade
+        </span>
+      </Link>
 
       <div className="menus">
         <ul>
-          <li>
-            <Link style={{ textDecoration: "none" }} to="/" onClick={() => handleMenuClick(0)}>
-              <p className={selectedMenu === 0 ? activeMenuClass : menuClass}>Dashboard</p>
-            </Link>
-          </li>
-          <li>
-            <Link style={{ textDecoration: "none" }} to="/orders" onClick={() => handleMenuClick(1)}>
-              <p className={selectedMenu === 1 ? activeMenuClass : menuClass}>Orders</p>
-            </Link>
-          </li>
-          <li>
-            <Link style={{ textDecoration: "none" }} to="/holdings" onClick={() => handleMenuClick(2)}>
-              <p className={selectedMenu === 2 ? activeMenuClass : menuClass}>Holdings</p>
-            </Link>
-          </li>
-          <li>
-            <Link style={{ textDecoration: "none" }} to="/positions" onClick={() => handleMenuClick(3)}>
-              <p className={selectedMenu === 3 ? activeMenuClass : menuClass}>Positions</p>
-            </Link>
-          </li>
-          <li>
-            <Link style={{ textDecoration: "none" }} to="/funds" onClick={() => handleMenuClick(4)}>
-              <p className={selectedMenu === 4 ? activeMenuClass : menuClass}>Funds</p>
-            </Link>
-          </li>
-          <li>
-            <Link style={{ textDecoration: "none" }} to="/apps" onClick={() => handleMenuClick(5)}>
-              <p className={selectedMenu === 5 ? activeMenuClass : menuClass}>Apps</p>
-            </Link>
-          </li>
+          {navItems.map((item, index) => (
+            <li key={item.label}>
+              <Link
+                style={{ textDecoration: "none" }}
+                to={item.path}
+                onClick={() => handleMenuClick(index)}
+              >
+                <p className={selectedMenu === index ? activeMenuClass : menuClass}>
+                  {item.label}
+                </p>
+              </Link>
+            </li>
+          ))}
         </ul>
 
         <hr />
 
-        {/* --- PROFILE SECTION WITH MATERIAL UI --- */}
-        <div 
-          className="profile" 
-          onClick={handleClick} 
-          style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
+        <div
+          className="profile"
+          onClick={handleProfileClick}
+          style={{
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
         >
-          {/* We can use MUI Avatar or your custom one. MUI Avatar looks great. */}
-          <Avatar sx={{ width: 30, height: 30, bgcolor: "#e0e0e0", color: "#387ed1", fontSize: "0.9rem", fontWeight: "bold" }}>
-             {initials}
+          <Avatar
+            sx={{
+              width: 32,
+              height: 32,
+              bgcolor: "#e0ecff",
+              color: "#2563eb",
+              fontSize: "0.9rem",
+              fontWeight: "bold",
+            }}
+          >
+            {initials}
           </Avatar>
-          <p className="username" style={{ margin: 0 }}>{displayUsername}</p>
+
+          <p className="username" style={{ margin: 0 }}>
+            {displayUsername}
+          </p>
         </div>
 
-        {/* THE DROPDOWN MENU */}
         <MuiMenu
           anchorEl={anchorEl}
           open={open}
@@ -115,33 +157,32 @@ const Menu = () => {
           PaperProps={{
             elevation: 0,
             sx: {
-              overflow: 'visible',
-              filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+              overflow: "visible",
+              filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.22))",
               mt: 1.5,
-              '& .MuiAvatar-root': {
+              "& .MuiAvatar-root": {
                 width: 32,
                 height: 32,
                 ml: -0.5,
                 mr: 1,
               },
-              '&:before': {
+              "&:before": {
                 content: '""',
-                display: 'block',
-                position: 'absolute',
+                display: "block",
+                position: "absolute",
                 top: 0,
                 right: 14,
                 width: 10,
                 height: 10,
-                bgcolor: 'background.paper',
-                transform: 'translateY(-50%) rotate(45deg)',
+                bgcolor: "background.paper",
+                transform: "translateY(-50%) rotate(45deg)",
                 zIndex: 0,
               },
             },
           }}
-          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
-          {/* Option 1: Profile (Disabled for now) */}
           <MenuItem onClick={handleClose}>
             <ListItemIcon>
               <Person fontSize="small" />
@@ -151,15 +192,13 @@ const Menu = () => {
 
           <Divider />
 
-          {/* Option 2: Logout (Red Color) */}
-          <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+          <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
             <ListItemIcon>
               <Logout fontSize="small" color="error" />
             </ListItemIcon>
             Logout
           </MenuItem>
         </MuiMenu>
-        
       </div>
     </div>
   );
