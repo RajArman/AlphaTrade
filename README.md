@@ -1,6 +1,6 @@
 # 📈 AlphaTrade
 
-A full-stack MERN stock trading platform inspired by modern brokerage dashboards. AlphaTrade allows users to securely manage their portfolio, place buy/sell orders, monitor holdings, and analyze portfolio performance through an interactive dashboard.
+A full-stack MERN stock trading platform featuring secure authentication, portfolio management, interactive analytics, and a modern trading dashboard.
 
 ---
 
@@ -169,32 +169,6 @@ JWT_SECRET=your_secret_key
 
 ---
 
-# 📸 Screenshots
-
-### Landing Page
-
-(Add Screenshot)
-
----
-
-### Dashboard
-
-(Add Screenshot)
-
----
-
-### Portfolio Insights
-
-(Add Screenshot)
-
----
-
-### Dark Mode
-
-(Add Screenshot)
-
----
-
 # 🔮 Future Improvements
 
 - AI Portfolio Advisor
@@ -232,6 +206,6 @@ This project helped strengthen my understanding of:
 B.Tech Electronics & Communication Engineering  
 Birla Institute of Technology, Mesra
 
-GitHub: https://github.com/yourusername
+GitHub: https://github.com/RajArman
 
-LinkedIn: https://linkedin.com/in/yourprofile
+LinkedIn: https://linkedin.com/in/arman-raj
