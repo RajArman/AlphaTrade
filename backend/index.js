@@ -31,7 +31,8 @@ app.use(cors({
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:5175",
-    "https://alpha-trade-6k67.vercel.app"
+    "https://alpha-trade-6k67.vercel.app",
+    "https://alpha-trade-hbht.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
