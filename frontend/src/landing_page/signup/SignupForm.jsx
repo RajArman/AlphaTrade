@@ -25,7 +25,7 @@ export default function SignupForm() {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3002/auth/signup",
+        "https://alpha-trade-iota.vercel.app/auth/signup",
         { ...inputValue },
         { withCredentials: true }
       );
@@ -36,7 +36,7 @@ export default function SignupForm() {
         });
 
         setTimeout(() => {
-          window.location.href = "http://localhost:5173";
+          window.location.href = "/";
         }, 1000);
       } else {
         toast.error(data.message || "Signup failed", {

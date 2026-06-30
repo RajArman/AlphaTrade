@@ -26,7 +26,7 @@ export default function LoginForm() {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3002/auth/login",
+        "https://alpha-trade-iota.vercel.app/auth/login",
         { ...inputValue },
         { withCredentials: true }
       );
@@ -37,7 +37,7 @@ export default function LoginForm() {
         });
 
         setTimeout(() => {
-          window.location.replace("http://localhost:5174/");
+          window.location.replace("/");
         }, 1000);
       } else {
         toast.error(data.message || "Login failed", {
