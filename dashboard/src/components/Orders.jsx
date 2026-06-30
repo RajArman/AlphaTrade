@@ -1,30 +1,24 @@
-import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-// import axios from "axios";
-
 import GeneralContext from "./GeneralContext";
+import { useContext } from "react";
 
 const Orders = () => {
-  // const [allOrders, setAllOrders] = useState([]);
-  // const { refreshCount } = useContext(GeneralContext);
-
   const { orders } = useContext(GeneralContext);
 
-  // useEffect(() => {
-  //   axios.get("http://localhost:3002/allOrders", { withCredentials: true }).then((res) => {
-  //     console.log(res.data);
-  //     setAllOrders(res.data);
-  //   }).catch((err) => {
-  //     console.error("Error fetching orders:", err);
-  //   });
-  // }, [refreshCount]);
+  const formatNumber = (num) =>
+    Number(num || 0).toLocaleString("en-IN", {
+      maximumFractionDigits: 2,
+    });
 
   return (
     <div className="orders">
       {orders.length === 0 ? (
         <div className="no-orders">
-          <p>You haven't placed any orders today</p>
-          <Link to="/" className="btn">Get started</Link>
+          <h3>No orders yet</h3>
+          <p>Start by selecting a stock from your watchlist and placing your first order.</p>
+          <Link to="/" className="btn">
+            Go to Watchlist
+          </Link>
         </div>
       ) : (
         <>
@@ -34,20 +28,22 @@ const Orders = () => {
             <table>
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Qty.</th>
-                  <th>Price</th>
-                  <th>Type</th>
+                  <th>Instrument</th>
+                  <th>Quantity</th>
+                  <th>Order Price</th>
+                  <th>Order Type</th>
                 </tr>
               </thead>
 
               <tbody>
-                {orders.map((stock, index) => (
+                {orders.map((order, index) => (
                   <tr key={index}>
-                    <td>{stock.name}</td>
-                    <td>{stock.qty}</td>
-                    <td>{stock.price?.toFixed(2)}</td>
-                    <td className={stock.mode === "BUY" ? "buy" : "sell"}>{stock.mode}</td>
+                    <td>{order.name}</td>
+                    <td>{order.qty}</td>
+                    <td>{formatNumber(order.price)}</td>
+                    <td className={order.mode === "BUY" ? "profit" : "loss"}>
+                      {order.mode}
+                    </td>
                   </tr>
                 ))}
               </tbody>

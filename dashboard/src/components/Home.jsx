@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Dashboard from "./Dashboard";
 import TopBar from "./TopBar";
+import Loading from "./Loading";
 
 const Home = () => {
   const [isVerified, setIsVerified] = useState(null); // null = loading, true = verified, false = not verified
@@ -30,9 +31,9 @@ const Home = () => {
   }, []);
 
   // Show loading while verifying
-  if (isVerified === null) {
-    return <div>Loading...</div>;
-  }
+ if (isVerified === null) {
+  return <Loading />;
+}
 
   // Redirect if not verified
   if (isVerified === false) {

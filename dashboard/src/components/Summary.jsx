@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
+import Loading from "./Loading";
 
 const Summary = () => {
   const { user, orders } = useContext(GeneralContext);
@@ -35,9 +36,8 @@ const Summary = () => {
   const recentOrders = orders ? orders.slice(-4).reverse() : [];
 
   if (!summary) {
-    return <p>Loading portfolio summary...</p>;
-  }
-
+  return <Loading />;
+}
   return (
     <>
       <div className="username">
