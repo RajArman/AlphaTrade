@@ -30,11 +30,10 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "http://localhost:5174",
-     "http://localhost:5175",
+    "http://localhost:5175",
+    "https://alpha-trade-6k67.vercel.app"
   ],
-  methods: [
-    "GET", "POST", "PUT", "DELETE",
-  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
