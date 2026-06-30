@@ -93,8 +93,14 @@ code {
 }
 
 .table {
-  border: 1px solid #ddd;
-  padding: 5% 8%;
+    border:1px solid #ddd;
+    padding:5% 8%;
+    border-radius:16px;
+}
+
+.order-table{
+    border-radius:16px;
+    overflow:hidden;
 }
 
 .table .data {
@@ -147,11 +153,11 @@ code {
   background: #7bdd7f;
 }
 
-.title {
-  font-size: 1.3rem;
-  font-weight: 300;
-  color: rgb(71, 71, 71);
-  margin-bottom: 2%;
+.title{
+    font-size:1.45rem;
+    font-weight:600;
+    color:#222;
+    margin-bottom:20px;
 }
 
 .order-table table {
@@ -914,3 +920,86 @@ body.dark-mode .brand-text {
   color: white !important;
 }
 
+/* ===== FINAL UI POLISH ===== */
+
+.order-table tbody tr {
+  transition: all 0.25s ease;
+}
+
+.order-table tbody tr:hover {
+  background: rgba(37, 99, 235, 0.05);
+  transform: scale(1.002);
+}
+
+.btn,
+.buy,
+.sell,
+.action {
+  transition: all 0.25s ease;
+}
+
+.btn:hover,
+.buy:hover,
+.sell:hover,
+.action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.col,
+.table,
+.commodity {
+  transition: all 0.25s ease;
+}
+
+.table:hover,
+.commodity:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+}
+
+.search {
+  transition: all .25s ease;
+}
+
+.search:focus {
+  box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+}
+
+@media (max-width:900px){
+
+.dashboard-container{
+    flex-direction:column;
+}
+
+.watchlist-container{
+    width:100%;
+    height:320px;
+}
+
+.content{
+    width:100%;
+}
+
+.row{
+    flex-direction:column;
+}
+
+.col{
+    width:100%;
+    margin-bottom:25px;
+}
+
+.order-table{
+    overflow-x:auto;
+}
+
+}
+
+@keyframes spin{
+    from{
+        transform:rotate(0deg);
+    }
+    to{
+        transform:rotate(360deg);
+    }
+}

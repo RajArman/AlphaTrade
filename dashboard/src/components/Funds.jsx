@@ -1,82 +1,91 @@
-import { Link } from "react-router-dom";
-
 const Funds = () => {
+  const availableMargin = 4043.1;
+  const usedMargin = 3757.3;
+  const availableCash = 4043.1;
+
   return (
     <>
       <div className="funds">
-        <p>Instant, zero-cost fund transfers with UPI </p>
-        <Link className="btn btn-green">Add funds</Link>
-        <Link className="btn btn-blue">Withdraw</Link>
+        <h3 style={{ marginBottom: "8px" }}>Funds</h3>
+
+        <p style={{ color: "#777", marginBottom: "20px" }}>
+          Manage your trading balance and available funds.
+        </p>
+
+        <button className="btn btn-green">Add Funds</button>
+
+        <button
+          className="btn btn-blue"
+          style={{ marginLeft: "10px" }}
+        >
+          Withdraw
+        </button>
       </div>
 
       <div className="row">
         <div className="col">
-          <span>
-            <p>Equity</p>
-          </span>
-
           <div className="table">
             <div className="data">
-              <p>Available margin</p>
-              <p className="imp colored">4,043.10</p>
+              <p>Available Margin</p>
+              <p className="imp colored">
+                ₹ {availableMargin.toLocaleString()}
+              </p>
             </div>
+
             <div className="data">
-              <p>Used margin</p>
-              <p className="imp">3,757.30</p>
+              <p>Used Margin</p>
+              <p className="imp">
+                ₹ {usedMargin.toLocaleString()}
+              </p>
             </div>
+
             <div className="data">
-              <p>Available cash</p>
-              <p className="imp">4,043.10</p>
+              <p>Available Cash</p>
+              <p className="imp">
+                ₹ {availableCash.toLocaleString()}
+              </p>
             </div>
+
             <hr />
+
             <div className="data">
-              <p>Opening Balance</p>
-              <p>4,043.10</p>
+              <p>Total Balance</p>
+              <p>
+                ₹ {(availableMargin + usedMargin).toLocaleString()}
+              </p>
             </div>
+
             <div className="data">
-              <p>Opening Balance</p>
-              <p>3736.40</p>
+              <p>Today's Deposits</p>
+              <p>₹ 0</p>
             </div>
+
             <div className="data">
-              <p>Payin</p>
-              <p>4064.00</p>
-            </div>
-            <div className="data">
-              <p>SPAN</p>
-              <p>0.00</p>
-            </div>
-            <div className="data">
-              <p>Delivery margin</p>
-              <p>0.00</p>
-            </div>
-            <div className="data">
-              <p>Exposure</p>
-              <p>0.00</p>
-            </div>
-            <div className="data">
-              <p>Options premium</p>
-              <p>0.00</p>
-            </div>
-            <hr />
-            <div className="data">
-              <p>Collateral (Liquid funds)</p>
-              <p>0.00</p>
-            </div>
-            <div className="data">
-              <p>Collateral (Equity)</p>
-              <p>0.00</p>
-            </div>
-            <div className="data">
-              <p>Total Collateral</p>
-              <p>0.00</p>
+              <p>Today's Withdrawals</p>
+              <p>₹ 0</p>
             </div>
           </div>
         </div>
 
         <div className="col">
           <div className="commodity">
-            <p>You don't have a commodity account</p>
-            <Link className="btn btn-blue">Open Account</Link>
+            <h4>Account Status</h4>
+
+            <p style={{ marginTop: "15px" }}>
+              ✔ Equity Account Active
+            </p>
+
+            <p>
+              ✔ Portfolio Tracking Enabled
+            </p>
+
+            <p>
+              ✔ Secure Authentication Enabled
+            </p>
+
+            <button className="btn btn-blue" style={{ marginTop: "20px" }}>
+              View Statements
+            </button>
           </div>
         </div>
       </div>

@@ -27,37 +27,65 @@ const Apps = () => {
       })
     : null;
 
+  const worstStock = holdings.length
+    ? holdings.reduce((worst, stock) => {
+        const stockPL = stock.price * stock.qty - stock.avg * stock.qty;
+        const worstPL = worst.price * worst.qty - worst.avg * worst.qty;
+        return stockPL < worstPL ? stock : worst;
+      })
+    : null;
+
   const formatNumber = (num) =>
     num.toLocaleString("en-IN", {
       maximumFractionDigits: 2,
     });
 
+  const insightCards = [
+    {
+      label: "Total Holdings",
+      value: holdings.length,
+      icon: "📦",
+    },
+    {
+      label: "Investment",
+      value: formatNumber(totalInvestment),
+      icon: "💰",
+    },
+    {
+      label: "Current Value",
+      value: formatNumber(currentValue),
+      icon: "📈",
+    },
+    {
+      label: "Total P&L",
+      value: formatNumber(totalPL),
+      icon: totalPL >= 0 ? "🟢" : "🔴",
+      className: totalPL >= 0 ? "profit" : "loss",
+    },
+  ];
+
   return (
     <div style={{ padding: "30px" }}>
-      <h2 style={{ marginBottom: "25px" }}>Portfolio Insights</h2>
+      <h2 style={{ marginBottom: "8px" }}>Portfolio Insights</h2>
+      <p style={{ color: "#888", marginBottom: "30px" }}>
+        Track your portfolio health, order activity, and key investment signals.
+      </p>
 
       <div className="row">
-        <div className="col">
-          <h5>{holdings.length}</h5>
-          <p>Total Holdings</p>
-        </div>
-
-        <div className="col">
-          <h5>{formatNumber(currentValue)}</h5>
-          <p>Current Value</p>
-        </div>
-
-        <div className="col">
-          <h5 className={totalPL >= 0 ? "profit" : "loss"}>
-            {formatNumber(totalPL)}
-          </h5>
-          <p>Total P&amp;L</p>
-        </div>
+        {insightCards.map((card) => (
+          <div className="col" key={card.label}>
+            <p style={{ fontSize: "1.6rem", marginBottom: "8px" }}>
+              {card.icon}
+            </p>
+            <h5 className={card.className || ""}>{card.value}</h5>
+            <p>{card.label}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="section" style={{ marginTop: "40px" }}>
+      <div className="section" style={{ marginTop: "45px" }}>
         <span>
-          <p>Quick Stats</p>
+          <p>Portfolio Statistics</p>
         </span>
 
         <div className="order-table">
@@ -69,18 +97,49 @@ const Apps = () => {
               </tr>
               <tr>
                 <td>Buy Orders</td>
-                <td>{buyOrders}</td>
+                <td className="profit">{buyOrders}</td>
               </tr>
               <tr>
                 <td>Sell Orders</td>
-                <td>{sellOrders}</td>
+                <td className="loss">{sellOrders}</td>
               </tr>
               <tr>
                 <td>Best Holding</td>
                 <td>{bestStock ? bestStock.name : "No holdings yet"}</td>
               </tr>
+              <tr>
+                <td>Weakest Holding</td>
+                <td>{worstStock ? worstStock.name : "No holdings yet"}</td>
+              </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div className="section" style={{ marginTop: "45px" }}>
+        <span>
+          <p>Portfolio Health</p>
+        </span>
+
+        <div
+          style={{
+            border: "1px solid #e5e7eb",
+            borderRadius: "12px",
+            padding: "20px",
+            background: "rgba(37, 99, 235, 0.04)",
+          }}
+        >
+          <p>
+            {holdings.length === 0
+              ? "No holdings yet. Start by placing your first buy order."
+              : totalPL >= 0
+              ? "Your portfolio is currently in profit. Keep monitoring allocation and risk."
+              : "Your portfolio is currently in loss. Review underperforming holdings carefully."}
+          </p>
+
+          <p style={{ marginBottom: 0, color: "#888" }}>
+            Active holdings: {holdings.length} • Orders tracked: {orders.length}
+          </p>
         </div>
       </div>
     </div>
