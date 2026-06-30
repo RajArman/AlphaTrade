@@ -359,15 +359,21 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Connect to database BEFORE starting server
-mongoose.connect(uri)
+// Connect to database
+mongoose
+  .connect(uri)
   .then(() => {
     console.log("DB connected");
-    app.listen(PORT, () => {
-      console.log("APP started on port", PORT);
-    });
   })
   .catch((error) => {
     console.error("Database connection error:", error);
-    process.exit(1);
   });
+
+// Start server only during local development
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log("APP started on port", PORT);
+  });
+}
+
+export default app;
