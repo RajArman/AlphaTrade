@@ -37,7 +37,7 @@ const Home = () => {
 
   // Redirect if not verified
   if (isVerified === false) {
-    window.location.href = "http://localhost:5173/login";
+    window.location.href = "https://alpha-trade-6k67.vercel.app/login";
     return null;
   }
 
