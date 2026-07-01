@@ -54,10 +54,10 @@ export const GeneralContextProvider = (props) => {
     try {
       // Fetch everything in parallel for speed
       const [userRes, holdingsRes, ordersRes, positionsRes] = await Promise.all([
-        axios.get("http://localhost:3002/auth/me", { withCredentials: true }),
-        axios.get("http://localhost:3002/allHoldings", { withCredentials: true }),
-        axios.get("http://localhost:3002/allOrders", { withCredentials: true }),
-        axios.get("http://localhost:3002/allPositions", { withCredentials: true }),
+        axios.get("https://alpha-trade-iota.vercel.app/auth/me", { withCredentials: true }),
+        axios.get("https://alpha-trade-iota.vercel.app/allHoldings", { withCredentials: true }),
+        axios.get("https://alpha-trade-iota.vercel.app/allOrders", { withCredentials: true }),
+        axios.get("https://alpha-trade-iota.vercel.app/allPositions", { withCredentials: true }),
       ]);
 
       if (userRes.data.success) {

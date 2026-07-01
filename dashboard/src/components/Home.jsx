@@ -10,7 +10,7 @@ const Home = () => {
   useEffect(() => {
     const verifyUser = async () => {
       try {
-        const res = await axios.get("http://localhost:3002/auth/me", {
+        const res = await axios.get("https://alpha-trade-iota.vercel.app/auth/me", {
           withCredentials: true,
         });
 
