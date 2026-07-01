@@ -37,7 +37,7 @@ export default function LoginForm() {
         });
 
         setTimeout(() => {
-          window.location.replace("https://alpha-trade-hbbt.vercel.app");
+          window.location.replace("https://alpha-trade-hbht.vercel.app");
         }, 1000);
       } else {
         toast.error(data.message || "Login failed", {
