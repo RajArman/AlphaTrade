@@ -13,7 +13,7 @@ const SellActionWindow = ({ uid }) => {
 
   const handleSellClick = async () => {
     try {
-      await axios.post("http://localhost:3002/sellOrder", {
+      await axios.post("https://alpha-trade-iota.vercel.app/sellOrder", {
         name: uid,
         qty: stockQuantity,
         price: stockPrice,

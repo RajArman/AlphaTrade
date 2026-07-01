@@ -11,7 +11,7 @@ const Summary = () => {
     const fetchSummary = async () => {
       try {
         const { data } = await axios.get(
-          "http://localhost:3002/dashboardSummary",
+          "https://alpha-trade-iota.vercel.app/dashboardSummary",
           { withCredentials: true }
         );
 

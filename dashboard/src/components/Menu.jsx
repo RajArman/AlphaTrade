@@ -72,7 +72,7 @@ const Menu = () => {
   const handleLogout = async () => {
     try {
       await axios.post(
-        "http://localhost:3002/auth/logout",
+        "https://alpha-trade-iota.vercel.app/auth/logout",
         {},
         { withCredentials: true }
       );
