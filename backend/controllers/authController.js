@@ -4,9 +4,10 @@ import { createToken } from "../utils/createToken.js";
 import { signupSchema, loginSchema } from "../utils/validation.js";
  
 const cookieOptions = {
-  httpOnly: true, // Prevents JavaScript (XSS attacks) from stealing the token
-  sameSite: "lax", // Protects against CSRF attacks
-  secure: process.env.NODE_ENV === "production", // true ONLY in production HTTPS
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
 };
 
 
