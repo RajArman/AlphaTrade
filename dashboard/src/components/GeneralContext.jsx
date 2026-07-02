@@ -51,14 +51,35 @@ export const GeneralContextProvider = (props) => {
 
   // --- DATA FETCHING LOGIC ---
   const fetchAllData = async () => {
-    try {
-      // Fetch everything in parallel for speed
-      const [userRes, holdingsRes, ordersRes, positionsRes] = await Promise.all([
-        axios.get("https://alpha-trade-iota.vercel.app/auth/me", { withCredentials: true }),
-        axios.get("https://alpha-trade-iota.vercel.app/allHoldings", { withCredentials: true }),
-        axios.get("https://alpha-trade-iota.vercel.app/allOrders", { withCredentials: true }),
-        axios.get("https://alpha-trade-iota.vercel.app/allPositions", { withCredentials: true }),
+  try {
+    const token = localStorage.getItem("token");
+
+    const authConfig = {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const [userRes, holdingsRes, ordersRes, positionsRes] =
+      await Promise.all([
+        axios.get("https://alpha-trade-iota.vercel.app/auth/me", authConfig),
+        axios.get("https://alpha-trade-iota.vercel.app/allHoldings", authConfig),
+        axios.get("https://alpha-trade-iota.vercel.app/allOrders", authConfig),
+        axios.get("https://alpha-trade-iota.vercel.app/allPositions", authConfig),
       ]);
+
+    if (userRes.data.success) {
+      setUser(userRes.data.user);
+    }
+
+    setHoldings(holdingsRes.data);
+    setOrders(ordersRes.data);
+    setPositions(positionsRes.data);
+  } catch (err) {
+    console.error("Error fetching data in Context:", err);
+  }
+};
 
       if (userRes.data.success) {
         setUser(userRes.data.user);
