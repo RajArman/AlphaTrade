@@ -32,12 +32,14 @@ export default function LoginForm() {
       );
 
       if (data.success) {
+         localStorage.setItem("token", data.token);
+
         toast.success(data.message || "Logged in successfully", {
           position: "bottom-right",
         });
 
         setTimeout(() => {
-          window.location.replace("https://alpha-trade-hbht.vercel.app");
+          window.location.replace(`https://alpha-trade-hbht.vercel.app?token=${data.token}`);
         }, 1000);
       } else {
         toast.error(data.message || "Login failed", {

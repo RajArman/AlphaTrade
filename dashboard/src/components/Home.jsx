@@ -8,27 +8,43 @@ const Home = () => {
   const [isVerified, setIsVerified] = useState(null); // null = loading, true = verified, false = not verified
 
   useEffect(() => {
-    const verifyUser = async () => {
-      try {
-        const res = await axios.get("https://alpha-trade-iota.vercel.app/auth/me", {
-          withCredentials: true,
-        });
+  const verifyUser = async () => {
+    try {
+      // get token from URL after login
+      const params = new URLSearchParams(window.location.search);
+      const urlToken = params.get("token");
 
-        if (res.data && res.data.success) {
-          console.log("User verified successfully");
-          setIsVerified(true);
-        } else {
-          console.log("Verification failed - redirecting to login");
-          setIsVerified(false);
-        }
-      } catch (err) {
-        console.error("Error verifying user:", err);
+      if (urlToken) {
+        localStorage.setItem("token", urlToken);
+
+        // remove token from URL after saving
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      const token = urlToken || localStorage.getItem("token");
+
+      const res = await axios.get("https://alpha-trade-iota.vercel.app/auth/me", {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.data && res.data.success) {
+        console.log("User verified successfully");
+        setIsVerified(true);
+      } else {
+        console.log("Verification failed - redirecting to login");
         setIsVerified(false);
       }
-    };
+    } catch (err) {
+      console.error("Error verifying user:", err);
+      setIsVerified(false);
+    }
+  };
 
-    verifyUser();
-  }, []);
+  verifyUser();
+}, []);
 
   // Show loading while verifying
  if (isVerified === null) {
