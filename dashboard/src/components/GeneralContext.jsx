@@ -23,7 +23,6 @@ export const GeneralContextProvider = (props) => {
   const [selectedStockUID, setSelectedStockUID] = useState("");
   const [refreshCount, setRefreshCount] = useState(0);
 
-  // Centralized Data State
   const [user, setUser] = useState(null);
   const [holdings, setHoldings] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -49,58 +48,43 @@ export const GeneralContextProvider = (props) => {
     setSelectedStockUID("");
   };
 
-  // --- DATA FETCHING LOGIC ---
   const fetchAllData = async () => {
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    const authConfig = {
-      withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
+      const authConfig = {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-    const [userRes, holdingsRes, ordersRes, positionsRes] =
-      await Promise.all([
-        axios.get("https://alpha-trade-iota.vercel.app/auth/me", authConfig),
-        axios.get("https://alpha-trade-iota.vercel.app/allHoldings", authConfig),
-        axios.get("https://alpha-trade-iota.vercel.app/allOrders", authConfig),
-        axios.get("https://alpha-trade-iota.vercel.app/allPositions", authConfig),
-      ]);
-
-    if (userRes.data.success) {
-      setUser(userRes.data.user);
-    }
-
-    setHoldings(holdingsRes.data);
-    setOrders(ordersRes.data);
-    setPositions(positionsRes.data);
-  } catch (err) {
-    console.error("Error fetching data in Context:", err);
-  }
-};
+      const [userRes, holdingsRes, ordersRes, positionsRes] =
+        await Promise.all([
+          axios.get("https://alpha-trade-iota.vercel.app/auth/me", authConfig),
+          axios.get("https://alpha-trade-iota.vercel.app/allHoldings", authConfig),
+          axios.get("https://alpha-trade-iota.vercel.app/allOrders", authConfig),
+          axios.get("https://alpha-trade-iota.vercel.app/allPositions", authConfig),
+        ]);
 
       if (userRes.data.success) {
         setUser(userRes.data.user);
       }
+
       setHoldings(holdingsRes.data);
       setOrders(ordersRes.data);
       setPositions(positionsRes.data);
-      
     } catch (err) {
       console.error("Error fetching data in Context:", err);
     }
   };
 
-  // Load data ONCE when app starts or when 'refreshCount' changes (e.g. after a trade)
   useEffect(() => {
     fetchAllData();
   }, [refreshCount]);
 
   const triggerRefresh = () => {
-    console.log("1. Context: triggerRefresh called!");
-    setRefreshCount(prev => prev + 1);
+    setRefreshCount((prev) => prev + 1);
   };
 
   return (
@@ -112,7 +96,6 @@ export const GeneralContextProvider = (props) => {
         closeSellWindow: handleCloseSellWindow,
         refreshCount,
         triggerRefresh,
-        // Passing data down
         user,
         holdings,
         orders,
