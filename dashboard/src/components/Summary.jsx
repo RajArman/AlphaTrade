@@ -7,24 +7,31 @@ const Summary = () => {
   const { user, orders } = useContext(GeneralContext);
   const [summary, setSummary] = useState(null);
 
-  useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const { data } = await axios.get(
-          "https://alpha-trade-iota.vercel.app/dashboardSummary",
-          { withCredentials: true }
-        );
+useEffect(() => {
+  const fetchSummary = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-        if (data.success) {
-          setSummary(data);
+      const { data } = await axios.get(
+        "https://alpha-trade-iota.vercel.app/dashboardSummary",
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      } catch (error) {
-        console.error("Failed to fetch summary:", error);
-      }
-    };
+      );
 
-    fetchSummary();
-  }, []);
+      if (data.success) {
+        setSummary(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch summary:", error);
+    }
+  };
+
+  fetchSummary();
+}, []);
 
   const formatNumber = (num) => {
     if (num === undefined || num === null) return "0";
