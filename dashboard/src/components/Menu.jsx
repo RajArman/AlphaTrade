@@ -80,7 +80,7 @@ const Menu = () => {
       handleClose();
 
       setTimeout(() => {
-        window.location.href = "http://localhost:5174";
+        window.location.href = "https://alpha-trade-6k67.vercel.app/login";
       }, 500);
     } catch (err) {
       console.error("Logout failed", err);
