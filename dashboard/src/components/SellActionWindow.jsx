@@ -11,23 +11,32 @@ const SellActionWindow = ({ uid }) => {
 
   const { closeSellWindow, triggerRefresh } = useContext(GeneralContext);
 
-  const handleSellClick = async () => {
-    try {
-      await axios.post("https://alpha-trade-iota.vercel.app/sellOrder", {
+const handleSellClick = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    await axios.post(
+      "https://alpha-trade-iota.vercel.app/sellOrder",
+      {
         name: uid,
         qty: stockQuantity,
         price: stockPrice,
         mode: "SELL",
-      }, { withCredentials: true })
+      },
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-      triggerRefresh();
-      closeSellWindow();
-
-    } catch(error) {
-      console.error("Error in sell: ", error);
-    }
-    
-  };
+    triggerRefresh();
+    closeSellWindow();
+  } catch (error) {
+    console.error("Error in sell:", error);
+  }
+};
 
   const handleCancelClick = () => {
     closeSellWindow();
