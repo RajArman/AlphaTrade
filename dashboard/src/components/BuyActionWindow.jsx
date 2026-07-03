@@ -13,24 +13,33 @@ const BuyActionWindow = ({ uid }) => {
 
   const { closeBuyWindow, triggerRefresh } = useContext(GeneralContext);
 
-  const handleBuyClick = async () => {
-    try {
-      await axios.post("https://alpha-trade-iota.vercel.app/newOrder",
-        {
-          name: uid,
-          qty: stockQuantity,
-          price: stockPrice,
-          mode: "BUY",
-        }, { withCredentials: true });
+ const handleBuyClick = async () => {
+  try {
+    const token = localStorage.getItem("token");
 
-      console.log("BuyWindow: Order Success, calling triggerRefresh...");
-      triggerRefresh();
-      closeBuyWindow();
-    } catch (error) {
-      console.error("Error in buy: ", error);
-    }
+    await axios.post(
+      "https://alpha-trade-iota.vercel.app/newOrder",
+      {
+        name: uid,
+        qty: stockQuantity,
+        price: stockPrice,
+        mode: "BUY",
+      },
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  };
+    console.log("BuyWindow: Order Success, calling triggerRefresh...");
+    triggerRefresh();
+    closeBuyWindow();
+  } catch (error) {
+    console.error("Error in buy:", error);
+  }
+};
 
   const handleCancelClick = () => {
     closeBuyWindow();
