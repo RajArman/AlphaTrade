@@ -9,12 +9,15 @@ dotenv.config();
 import { HoldingsModel } from "./model/HoldingsModel.js";
 import { PositionsModel } from "./model/PositionsModel.js";
 import { OrdersModel } from "./model/OrdersModel.js";
-import { DEFAULT_STARTING_BALANCE, getUserBalance } from "./model/UserModel.js";
+import User, { DEFAULT_STARTING_BALANCE, getUserBalance } from "./model/UserModel.js";
 
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 
 import { verifyUser } from "./middlewares/authMiddleware.js";
+import { buyOrderSchema } from "./utils/validation.js";
+import { InsufficientBalanceError } from "./utils/tradeErrors.js";
+import { calculateTotalCost, calculateWeightedAverage } from "./utils/tradeMath.js";
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
@@ -260,51 +263,109 @@ app.get("/allPositions", verifyUser, async (req, res) => {
 });
 
 app.post("/newOrder", verifyUser, async (req, res) => {
-  let newOrder = new OrdersModel({
-    name: req.body.name,
-    qty: req.body.qty,
-    price: req.body.price,
-    mode: "BUY",
-    user: req.user._id,
-  }); 
+  const validation = buyOrderSchema.safeParse(req.body);
 
-  await newOrder.save();
-
-  const existingHolding = await HoldingsModel.findOne({ 
-    name: newOrder.name, 
-    user: req.user._id 
-  });
-
-  if (!existingHolding) {
-    // create new Holding
-    const newHolding = new HoldingsModel({
-      name: newOrder.name,
-      qty: newOrder.qty,
-      avg: newOrder.price,
-      price: newOrder.price,
-      net: 0,
-      day: 0,
-      user: req.user._id,
+  if (!validation.success) {
+    return res.status(400).json({
+      success: false,
+      message: validation.error.issues[0].message,
     });
-
-    await newHolding.save();
-
-  } else {
-    const totalQty = existingHolding.qty + newOrder.qty;
-    const newAvg =
-      (existingHolding.avg * existingHolding.qty + newOrder.price * newOrder.qty) / totalQty;
-
-    existingHolding.qty = totalQty;
-    existingHolding.avg = newAvg;
-    existingHolding.price = newOrder.price;
-
-
-    await existingHolding.save();
-
   }
 
-  
-  res.send("Order saved!");
+  const { name, qty, price } = validation.data;
+  const totalCost = calculateTotalCost(qty, price);
+
+  // Milestone 1 relied on the schema's `default` for legacy users, but that
+  // default only applies when Mongoose hydrates a document in memory - it
+  // never touches the stored document. The atomic balance check/deduction
+  // below runs directly against the stored field, so any user saved before
+  // `balance` existed needs it backfilled first or the $gte filter below
+  // would never match them.
+  await User.updateOne(
+    { _id: req.user._id, balance: { $exists: false } },
+    { $set: { balance: DEFAULT_STARTING_BALANCE } }
+  );
+
+  const session = await mongoose.startSession();
+  let updatedBalance;
+
+  try {
+    await session.withTransaction(async () => {
+      // Atomic conditional decrement: this single query both checks and
+      // deducts balance, so it stays correct under concurrent buy requests
+      // without needing a separate read-then-write step.
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: req.user._id, balance: { $gte: totalCost } },
+        { $inc: { balance: -totalCost } },
+        { new: true, session }
+      );
+
+      if (!updatedUser) {
+        throw new InsufficientBalanceError();
+      }
+
+      updatedBalance = updatedUser.balance;
+
+      const newOrder = new OrdersModel({
+        name,
+        qty,
+        price,
+        mode: "BUY",
+        user: req.user._id,
+      });
+
+      await newOrder.save({ session });
+
+      const existingHolding = await HoldingsModel.findOne({
+        name,
+        user: req.user._id,
+      }).session(session);
+
+      if (!existingHolding) {
+        await new HoldingsModel({
+          name,
+          qty,
+          avg: price,
+          price,
+          net: 0,
+          day: 0,
+          user: req.user._id,
+        }).save({ session });
+      } else {
+        const { totalQty, avg } = calculateWeightedAverage(
+          existingHolding.qty,
+          existingHolding.avg,
+          qty,
+          price
+        );
+
+        existingHolding.qty = totalQty;
+        existingHolding.avg = avg;
+        existingHolding.price = price;
+
+        await existingHolding.save({ session });
+      }
+    });
+
+    res.json({
+      success: true,
+      message: "Order saved!",
+      balance: updatedBalance,
+    });
+  } catch (error) {
+    if (error instanceof InsufficientBalanceError) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+
+    console.error("Buy order failed:", error);
+    res.status(500).json({ success: false, message: "Failed to place order" });
+  } finally {
+    session.endSession();
+  }
 });
 
 app.get("/allOrders", verifyUser, async (req, res) => {

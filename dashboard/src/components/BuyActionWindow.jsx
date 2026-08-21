@@ -10,10 +10,28 @@ import "./BuyActionWindow.css";
 const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1); // no of stock
   const [stockPrice, setStockPrice] = useState(0.0); // price of stock
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { closeBuyWindow, triggerRefresh } = useContext(GeneralContext);
 
  const handleBuyClick = async () => {
+  const qty = Number(stockQuantity);
+  const price = Number(stockPrice);
+
+  if (!Number.isFinite(qty) || qty <= 0) {
+    setErrorMessage("Quantity must be a positive number");
+    return;
+  }
+
+  if (!Number.isFinite(price) || price <= 0) {
+    setErrorMessage("Price must be a positive number");
+    return;
+  }
+
+  setErrorMessage("");
+  setIsSubmitting(true);
+
   try {
     const token = localStorage.getItem("token");
 
@@ -21,8 +39,8 @@ const BuyActionWindow = ({ uid }) => {
       "https://alpha-trade-iota.vercel.app/newOrder",
       {
         name: uid,
-        qty: stockQuantity,
-        price: stockPrice,
+        qty,
+        price,
         mode: "BUY",
       },
       {
@@ -33,11 +51,15 @@ const BuyActionWindow = ({ uid }) => {
       }
     );
 
-    console.log("BuyWindow: Order Success, calling triggerRefresh...");
     triggerRefresh();
     closeBuyWindow();
   } catch (error) {
     console.error("Error in buy:", error);
+    setErrorMessage(
+      error.response?.data?.message || "Failed to place order. Please try again."
+    );
+  } finally {
+    setIsSubmitting(false);
   }
 };
 
@@ -71,13 +93,23 @@ const BuyActionWindow = ({ uid }) => {
             />
           </fieldset>
         </div>
+
+        {errorMessage && (
+          <p style={{ color: "#e53935", fontSize: "0.8rem", margin: "0 0 8px" }}>
+            {errorMessage}
+          </p>
+        )}
       </div>
 
       <div className="buttons">
         <span>Margin required ₹140.65</span>
         <div>
-          <button className="btn btn-blue" onClick={handleBuyClick}>
-            Buy
+          <button
+            className="btn btn-blue"
+            onClick={handleBuyClick}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Buying..." : "Buy"}
           </button>
           <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
             Cancel

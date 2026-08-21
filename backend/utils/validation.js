@@ -10,3 +10,9 @@ export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password is too short"),
 });
+
+export const buyOrderSchema = z.object({
+  name: z.string().min(1, "Stock name is required"),
+  qty: z.coerce.number().positive("Quantity must be a positive number"),
+  price: z.coerce.number().positive("Price must be a positive number"),
+});
