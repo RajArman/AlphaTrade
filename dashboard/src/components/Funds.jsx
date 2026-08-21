@@ -1,7 +1,12 @@
+import { useContext } from "react";
+import GeneralContext from "./GeneralContext";
+
 const Funds = () => {
-  const availableMargin = 4043.1;
-  const usedMargin = 3757.3;
-  const availableCash = 4043.1;
+  const { balance } = useContext(GeneralContext);
+
+  const availableMargin = balance;
+  const usedMargin = 0;
+  const availableCash = balance;
 
   return (
     <>

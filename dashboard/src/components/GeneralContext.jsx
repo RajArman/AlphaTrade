@@ -15,6 +15,7 @@ const GeneralContext = createContext({
   holdings: [],
   orders: [],
   positions: [],
+  balance: 0,
 });
 
 export const GeneralContextProvider = (props) => {
@@ -27,6 +28,7 @@ export const GeneralContextProvider = (props) => {
   const [holdings, setHoldings] = useState([]);
   const [orders, setOrders] = useState([]);
   const [positions, setPositions] = useState([]);
+  const [balance, setBalance] = useState(0);
 
   const handleOpenBuyWindow = (uid) => {
     setIsBuyWindowOpen(true);
@@ -59,12 +61,13 @@ export const GeneralContextProvider = (props) => {
         },
       };
 
-      const [userRes, holdingsRes, ordersRes, positionsRes] =
+      const [userRes, holdingsRes, ordersRes, positionsRes, summaryRes] =
         await Promise.all([
           axios.get("https://alpha-trade-iota.vercel.app/auth/me", authConfig),
           axios.get("https://alpha-trade-iota.vercel.app/allHoldings", authConfig),
           axios.get("https://alpha-trade-iota.vercel.app/allOrders", authConfig),
           axios.get("https://alpha-trade-iota.vercel.app/allPositions", authConfig),
+          axios.get("https://alpha-trade-iota.vercel.app/dashboardSummary", authConfig),
         ]);
 
       if (userRes.data.success) {
@@ -74,6 +77,10 @@ export const GeneralContextProvider = (props) => {
       setHoldings(holdingsRes.data);
       setOrders(ordersRes.data);
       setPositions(positionsRes.data);
+
+      if (summaryRes.data.success) {
+        setBalance(summaryRes.data.availableMargin);
+      }
     } catch (err) {
       console.error("Error fetching data in Context:", err);
     }
@@ -100,6 +107,7 @@ export const GeneralContextProvider = (props) => {
         holdings,
         orders,
         positions,
+        balance,
       }}
     >
       {props.children}

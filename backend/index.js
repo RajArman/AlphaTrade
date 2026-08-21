@@ -9,6 +9,7 @@ dotenv.config();
 import { HoldingsModel } from "./model/HoldingsModel.js";
 import { PositionsModel } from "./model/PositionsModel.js";
 import { OrdersModel } from "./model/OrdersModel.js";
+import { DEFAULT_STARTING_BALANCE, getUserBalance } from "./model/UserModel.js";
 
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
@@ -236,9 +237,9 @@ app.get("/dashboardSummary", verifyUser, async (req, res) => {
       currentValue,
       profitLoss,
       profitLossPercent,
-      availableMargin: 3740,
+      availableMargin: getUserBalance(req.user),
       marginsUsed: 0,
-      openingBalance: 3740,
+      openingBalance: DEFAULT_STARTING_BALANCE,
     });
   } catch (error) {
     res.status(500).json({
