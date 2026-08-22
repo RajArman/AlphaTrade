@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useContext } from "react";
 import { VerticalGraph } from "./VerticalGraph";
 import GeneralContext from "./GeneralContext";
 import Loading from "./Loading";
@@ -7,30 +7,21 @@ import ErrorState from "./ErrorState";
 const Holdings = () => {
   const { holdings, isInitialLoading, hasError } = useContext(GeneralContext);
 
-  const [portfolioSummary, setPortfolioSummary] = useState({
-    totalInvestment: 0,
-    currentValue: 0,
-    totalPL: 0,
-    pnlPercent: 0,
-  });
+  const portfolioSummary = holdings.reduce(
+    (summary, stock) => {
+      summary.totalInvestment += stock.avg * stock.qty;
+      summary.currentValue += stock.price * stock.qty;
+      return summary;
+    },
+    { totalInvestment: 0, currentValue: 0 }
+  );
 
-  useEffect(() => {
-    let investment = 0;
-    let currVal = 0;
-
-    holdings.forEach((stock) => {
-      investment += stock.avg * stock.qty;
-      currVal += stock.price * stock.qty;
-    });
-
-    setPortfolioSummary({
-      totalInvestment: investment,
-      currentValue: currVal,
-      totalPL: currVal - investment,
-      pnlPercent:
-        investment === 0 ? 0 : ((currVal - investment) / investment) * 100,
-    });
-  }, [holdings]);
+  portfolioSummary.totalPL =
+    portfolioSummary.currentValue - portfolioSummary.totalInvestment;
+  portfolioSummary.pnlPercent =
+    portfolioSummary.totalInvestment === 0
+      ? 0
+      : (portfolioSummary.totalPL / portfolioSummary.totalInvestment) * 100;
 
   const formatNumber = (num) => {
     return num.toLocaleString("en-IN", {

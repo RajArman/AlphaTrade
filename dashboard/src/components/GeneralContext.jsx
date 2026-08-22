@@ -7,9 +7,9 @@ import SellActionWindow from "./SellActionWindow";
 import { API_BASE_URL, SOCKET_URL } from "../config";
 
 const GeneralContext = createContext({
-  openBuyWindow: (uid) => {},
+  openBuyWindow: () => {},
   closeBuyWindow: () => {},
-  openSellWindow: (uid) => {},
+  openSellWindow: () => {},
   closeSellWindow: () => {},
   refreshCount: 0,
   triggerRefresh: () => {},
