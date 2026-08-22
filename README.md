@@ -16,7 +16,6 @@ A full-stack MERN stock trading platform featuring secure authentication, portfo
 ### 📊 Portfolio Dashboard
 - Portfolio Overview
 - Holdings Management
-- Positions Tracking
 - Order History
 - Funds Overview
 - Portfolio Insights

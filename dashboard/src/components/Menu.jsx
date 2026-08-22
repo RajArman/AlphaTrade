@@ -37,7 +37,6 @@ const Menu = () => {
     { label: "Overview", path: "/" },
     { label: "Orders", path: "/orders" },
     { label: "Holdings", path: "/holdings" },
-    { label: "Positions", path: "/positions" },
     { label: "Funds", path: "/funds" },
     { label: "Insights", path: "/insights" },
   ];
