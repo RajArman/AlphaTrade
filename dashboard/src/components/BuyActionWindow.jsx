@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 import GeneralContext from "./GeneralContext";
+import { API_BASE_URL } from "../config";
 
 import "./BuyActionWindow.css";
 
@@ -36,7 +37,7 @@ const BuyActionWindow = ({ uid }) => {
     const token = localStorage.getItem("token");
 
     await axios.post(
-      "https://alpha-trade-iota.vercel.app/newOrder",
+      `${API_BASE_URL}/newOrder`,
       {
         name: uid,
         qty,

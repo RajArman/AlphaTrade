@@ -163,8 +163,17 @@ Create a `.env` file inside the backend folder.
 ```env
 PORT=3002
 MONGO_URL=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+TOKEN_KEY=your_secret_key
+REDIS_URL=your_redis_connection_string
 ```
+
+- `TOKEN_KEY` is required - it signs the JWTs used for authentication.
+- `REDIS_URL` is optional. It enables caching for `/dashboardSummary`; if it's
+  unset (or Redis is unreachable), the app automatically falls back to
+  querying MongoDB directly, so Redis is never required for the app to run.
+- Leave `NODE_ENV` unset (or set it to `development`) for local development.
+  The local Express server and Socket.IO real-time price stream only start
+  when `NODE_ENV` is not `"production"`.
 
 ---
 

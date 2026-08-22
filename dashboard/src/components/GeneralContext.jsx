@@ -4,14 +4,7 @@ import { io } from "socket.io-client";
 
 import BuyActionWindow from "./BuyActionWindow";
 import SellActionWindow from "./SellActionWindow";
-
-// Socket.IO only runs on the backend when it's a persistent Node process
-// (e.g. `npm start`), not the Vercel serverless deployment - see the
-// comment above the io setup in backend/index.js. This intentionally
-// points at the local dev backend rather than the hardcoded production
-// URLs used elsewhere in this file, since sockets can't work against
-// serverless there.
-const SOCKET_URL = "http://localhost:3002";
+import { API_BASE_URL, SOCKET_URL } from "../config";
 
 const GeneralContext = createContext({
   openBuyWindow: (uid) => {},
@@ -78,10 +71,10 @@ export const GeneralContextProvider = (props) => {
 
       const [userRes, holdingsRes, ordersRes, summaryRes] =
         await Promise.all([
-          axios.get("https://alpha-trade-iota.vercel.app/auth/me", authConfig),
-          axios.get("https://alpha-trade-iota.vercel.app/allHoldings", authConfig),
-          axios.get("https://alpha-trade-iota.vercel.app/allOrders", authConfig),
-          axios.get("https://alpha-trade-iota.vercel.app/dashboardSummary", authConfig),
+          axios.get(`${API_BASE_URL}/auth/me`, authConfig),
+          axios.get(`${API_BASE_URL}/allHoldings`, authConfig),
+          axios.get(`${API_BASE_URL}/allOrders`, authConfig),
+          axios.get(`${API_BASE_URL}/dashboardSummary`, authConfig),
         ]);
 
       if (userRes.data.success) {
@@ -126,8 +119,16 @@ export const GeneralContextProvider = (props) => {
       });
     });
 
+    // Reconnection is automatic and intentionally unbounded (useful for
+    // local dev restarts), but on a deployed dashboard where SOCKET_URL
+    // is unreachable that means constant retries - dedupe the log so a
+    // dead connection doesn't flood the console on every attempt.
+    let lastLoggedSocketError = null;
     socket.on("connect_error", (err) => {
-      console.error("Price stream connection error:", err.message);
+      if (lastLoggedSocketError !== err.message) {
+        console.error("Price stream connection error:", err.message);
+        lastLoggedSocketError = err.message;
+      }
     });
 
     return () => {

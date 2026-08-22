@@ -3,6 +3,7 @@ import axios from "axios";
 import Dashboard from "./Dashboard";
 import TopBar from "./TopBar";
 import Loading from "./Loading";
+import { API_BASE_URL } from "../config";
 
 const Home = () => {
   const [isVerified, setIsVerified] = useState(null); // null = loading, true = verified, false = not verified
@@ -23,7 +24,7 @@ const Home = () => {
 
       const token = urlToken || localStorage.getItem("token");
 
-      const res = await axios.get("https://alpha-trade-iota.vercel.app/auth/me", {
+      const res = await axios.get(`${API_BASE_URL}/auth/me`, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${token}`,

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import "./Menu.css";
 import GeneralContext from "./GeneralContext";
+import { API_BASE_URL } from "../config";
 
 import {
   Menu as MuiMenu,
@@ -71,7 +72,7 @@ const Menu = () => {
   const handleLogout = async () => {
     try {
       await axios.post(
-        "https://alpha-trade-iota.vercel.app/auth/logout",
+        `${API_BASE_URL}/auth/logout`,
         {},
         { withCredentials: true }
       );
