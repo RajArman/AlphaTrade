@@ -16,3 +16,9 @@ export const buyOrderSchema = z.object({
   qty: z.coerce.number().positive("Quantity must be a positive number"),
   price: z.coerce.number().positive("Price must be a positive number"),
 });
+
+export const sellOrderSchema = z.object({
+  name: z.string().min(1, "Stock name is required"),
+  qty: z.coerce.number().positive("Quantity must be a positive number"),
+  price: z.coerce.number().positive("Price must be a positive number"),
+});

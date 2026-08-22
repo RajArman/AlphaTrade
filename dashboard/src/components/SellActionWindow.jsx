@@ -8,10 +8,28 @@ import "./BuyActionWindow.css"; // reuse same css for now
 const SellActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { closeSellWindow, triggerRefresh } = useContext(GeneralContext);
 
 const handleSellClick = async () => {
+  const qty = Number(stockQuantity);
+  const price = Number(stockPrice);
+
+  if (!Number.isFinite(qty) || qty <= 0) {
+    setErrorMessage("Quantity must be a positive number");
+    return;
+  }
+
+  if (!Number.isFinite(price) || price <= 0) {
+    setErrorMessage("Price must be a positive number");
+    return;
+  }
+
+  setErrorMessage("");
+  setIsSubmitting(true);
+
   try {
     const token = localStorage.getItem("token");
 
@@ -19,8 +37,8 @@ const handleSellClick = async () => {
       "https://alpha-trade-iota.vercel.app/sellOrder",
       {
         name: uid,
-        qty: stockQuantity,
-        price: stockPrice,
+        qty,
+        price,
         mode: "SELL",
       },
       {
@@ -35,6 +53,11 @@ const handleSellClick = async () => {
     closeSellWindow();
   } catch (error) {
     console.error("Error in sell:", error);
+    setErrorMessage(
+      error.response?.data?.message || "Failed to place order. Please try again."
+    );
+  } finally {
+    setIsSubmitting(false);
   }
 };
 
@@ -65,13 +88,23 @@ const handleSellClick = async () => {
             />
           </fieldset>
         </div>
+
+        {errorMessage && (
+          <p style={{ color: "#e53935", fontSize: "0.8rem", margin: "0 0 8px" }}>
+            {errorMessage}
+          </p>
+        )}
       </div>
 
       <div className="buttons">
         <span>Margin required ₹140.65</span>
         <div>
-          <button className="btn btn-red" onClick={handleSellClick}>
-            Sell
+          <button
+            className="btn btn-red"
+            onClick={handleSellClick}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Selling..." : "Sell"}
           </button>
           <Link className="btn btn-grey" onClick={handleCancelClick}>
             Cancel

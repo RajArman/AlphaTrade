@@ -15,8 +15,12 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 
 import { verifyUser } from "./middlewares/authMiddleware.js";
-import { buyOrderSchema } from "./utils/validation.js";
-import { InsufficientBalanceError } from "./utils/tradeErrors.js";
+import { buyOrderSchema, sellOrderSchema } from "./utils/validation.js";
+import {
+  InsufficientBalanceError,
+  HoldingNotFoundError,
+  InsufficientHoldingsError,
+} from "./utils/tradeErrors.js";
 import { calculateTotalCost, calculateWeightedAverage } from "./utils/tradeMath.js";
 
 const PORT = process.env.PORT || 3002;
@@ -374,38 +378,107 @@ app.get("/allOrders", verifyUser, async (req, res) => {
 });
 
 app.post("/sellOrder", verifyUser, async (req, res) => {
-  const { name, qty, price } = req.body;
+  const validation = sellOrderSchema.safeParse(req.body);
 
-  let sellOrder = new OrdersModel({
-    name: name,
-    qty: qty,
-    price: price,
-    mode: "SELL",
-    user: req.user._id,
-  }); 
-
-  sellOrder.save();
-  res.send("Sell order saved");
-
-  const holding = await HoldingsModel.findOne({ name, user: req.user._id });
-
-  if (!holding) {
-    return res.status(400).send("No holdings to sell");
+  if (!validation.success) {
+    return res.status(400).json({
+      success: false,
+      message: validation.error.issues[0].message,
+    });
   }
 
-  if (holding.qty < qty) {
-    return res.status(400).send("Not enough quantity");
+  const { name, qty, price } = validation.data;
+  const saleValue = calculateTotalCost(qty, price);
+
+  // Same legacy-user safety net as /newOrder: a user's very first trade
+  // could be a sell, so the stored balance field must exist before the
+  // credit below runs.
+  await User.updateOne(
+    { _id: req.user._id, balance: { $exists: false } },
+    { $set: { balance: DEFAULT_STARTING_BALANCE } }
+  );
+
+  const session = await mongoose.startSession();
+  let updatedBalance;
+  let holdingRemoved = false;
+
+  try {
+    await session.withTransaction(async () => {
+      // Atomic conditional decrement: only matches (and only writes) if the
+      // user currently holds at least `qty` shares, so holdings can never
+      // go negative even under concurrent sell requests.
+      const updatedHolding = await HoldingsModel.findOneAndUpdate(
+        { name, user: req.user._id, qty: { $gte: qty } },
+        { $inc: { qty: -qty }, $set: { price } },
+        { new: true, session }
+      );
+
+      if (!updatedHolding) {
+        // The conditional update didn't tell us *why* it failed to match -
+        // this read (same session/snapshot) distinguishes "never owned it"
+        // from "owns it, just not enough shares" for a clearer error.
+        const existingHolding = await HoldingsModel.findOne({
+          name,
+          user: req.user._id,
+        }).session(session);
+
+        if (!existingHolding) {
+          throw new HoldingNotFoundError();
+        }
+
+        throw new InsufficientHoldingsError();
+      }
+
+      if (updatedHolding.qty === 0) {
+        await HoldingsModel.deleteOne({ _id: updatedHolding._id }).session(session);
+        holdingRemoved = true;
+      }
+
+      // Preserve the holding's average buy price exactly - a sale never
+      // changes what the remaining shares were originally bought for.
+
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: req.user._id },
+        { $inc: { balance: saleValue } },
+        { new: true, session }
+      );
+
+      updatedBalance = updatedUser.balance;
+
+      const sellOrder = new OrdersModel({
+        name,
+        qty,
+        price,
+        mode: "SELL",
+        user: req.user._id,
+      });
+
+      await sellOrder.save({ session });
+    });
+
+    res.json({
+      success: true,
+      message: "Sell order saved",
+      balance: updatedBalance,
+      holdingRemoved,
+    });
+  } catch (error) {
+    if (
+      error instanceof HoldingNotFoundError ||
+      error instanceof InsufficientHoldingsError
+    ) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+
+    console.error("Sell order failed:", error);
+    res.status(500).json({ success: false, message: "Failed to place sell order" });
+  } finally {
+    session.endSession();
   }
-
-  holding.qty -= qty;
-  holding.price = price;
-
-  if (holding.qty === 0) {
-    await HoldingsModel.deleteOne({ name, user: req.user._id });
-  } else {
-    await holding.save();
-  }
-
 });
 
 // New auth route registration
