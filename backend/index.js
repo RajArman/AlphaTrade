@@ -368,7 +368,9 @@ app.post("/newOrder", verifyUser, async (req, res) => {
 });
 
 app.get("/allOrders", verifyUser, async (req, res) => {
-  let allOrders = await OrdersModel.find({user: req.user._id});
+  // Explicit sort so "most recent transaction first" is deterministic -
+  // MongoDB doesn't guarantee find() returns insertion order.
+  let allOrders = await OrdersModel.find({ user: req.user._id }).sort({ createdAt: -1 });
   res.json(allOrders);
 });
 

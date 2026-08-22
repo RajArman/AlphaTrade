@@ -40,7 +40,17 @@ useEffect(() => {
     });
   };
 
-  const recentOrders = orders ? orders.slice(-4).reverse() : [];
+  // /allOrders now returns orders newest-first, so the first 4 are the
+  // most recent transactions - no manual reversal needed.
+  const recentOrders = orders ? orders.slice(0, 4) : [];
+
+  const formatDate = (date) => {
+    if (!date) return "-";
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+    });
+  };
 
   if (!summary) {
   return <Loading />;
@@ -130,6 +140,7 @@ useEffect(() => {
             <table>
               <thead>
                 <tr>
+                  <th>Date</th>
                   <th>Name</th>
                   <th>Qty.</th>
                   <th>Price</th>
@@ -140,6 +151,7 @@ useEffect(() => {
               <tbody>
                 {recentOrders.map((order, index) => (
                   <tr key={index}>
+                    <td>{formatDate(order.createdAt)}</td>
                     <td>{order.name}</td>
                     <td>{order.qty}</td>
                     <td>{formatNumber(order.price)}</td>

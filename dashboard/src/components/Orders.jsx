@@ -10,6 +10,17 @@ const Orders = () => {
       maximumFractionDigits: 2,
     });
 
+  const formatDate = (date) => {
+    if (!date) return "-";
+    return new Date(date).toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
     <div className="orders">
       {orders.length === 0 ? (
@@ -28,6 +39,7 @@ const Orders = () => {
             <table>
               <thead>
                 <tr>
+                  <th>Date</th>
                   <th>Instrument</th>
                   <th>Quantity</th>
                   <th>Order Price</th>
@@ -38,6 +50,7 @@ const Orders = () => {
               <tbody>
                 {orders.map((order, index) => (
                   <tr key={index}>
+                    <td>{formatDate(order.createdAt)}</td>
                     <td>{order.name}</td>
                     <td>{order.qty}</td>
                     <td>{formatNumber(order.price)}</td>
