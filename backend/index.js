@@ -3,6 +3,8 @@ import express from "express";
 import mongoose from "mongoose";
 // import bodyParser from "body-parser";
 import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 dotenv.config();
 
@@ -22,6 +24,7 @@ import {
 } from "./utils/tradeErrors.js";
 import { calculateTotalCost, calculateWeightedAverage } from "./utils/tradeMath.js";
 import { calculatePortfolioTotals, calculateTotalAccountValue } from "./utils/portfolioMath.js";
+import { createInitialPriceState, generatePriceTick } from "./utils/priceSimulator.js";
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
@@ -33,15 +36,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
 
+// Shared with the Socket.IO CORS config below - same dashboard origins
+// allowed on both the HTTP API and the socket connection.
+const corsOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "https://alpha-trade-6k67.vercel.app",
+  "https://alpha-trade-hbht.vercel.app"
+];
+
 // CORS with proper configuration
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:5175",
-    "https://alpha-trade-6k67.vercel.app",
-    "https://alpha-trade-hbht.vercel.app"
-  ],
+  origin: corsOrigins,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -453,9 +460,50 @@ mongoose
     console.error("Database connection error:", error);
   });
 
-// Start server only during local development
+// Start server only during local development.
+//
+// Socket.IO needs a long-lived process to hold connections open and run
+// the price-emission interval, so it's only attached here - not to the
+// Vercel serverless entry point in api/index.js, which invokes `app` fresh
+// per HTTP request and has no persistent process to keep a socket or
+// interval alive. Real-time prices work when the backend is run as a
+// normal Node process (e.g. `npm start`, or a non-serverless host);
+// deploying this feature to the current Vercel serverless setup would
+// require moving off serverless (or a serverless-compatible pub/sub
+// adapter), which is out of scope for this milestone.
 if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => {
+  const httpServer = createServer(app);
+
+  const io = new Server(httpServer, {
+    cors: {
+      origin: corsOrigins,
+      credentials: true,
+    },
+  });
+
+  io.on("connection", (socket) => {
+    console.log("Client connected to price stream:", socket.id);
+
+    socket.on("disconnect", () => {
+      console.log("Client disconnected from price stream:", socket.id);
+    });
+  });
+
+  // One shared interval for all connected clients, broadcasting via
+  // io.emit - not one interval per socket.
+  const priceState = createInitialPriceState();
+  const PRICE_TICK_INTERVAL_MS = 3000;
+
+  const priceInterval = setInterval(() => {
+    const updates = generatePriceTick(priceState);
+    io.emit("priceUpdate", updates);
+  }, PRICE_TICK_INTERVAL_MS);
+
+  httpServer.on("close", () => {
+    clearInterval(priceInterval);
+  });
+
+  httpServer.listen(PORT, () => {
     console.log("APP started on port", PORT);
   });
 }

@@ -12,8 +12,17 @@ import { DoughnumChart } from "./DoughnutChart";
 
 const WatchList = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { livePrices } = useContext(GeneralContext);
 
-  const filteredWatchlist = watchlist.filter((stock) =>
+  // Live prices arrive over Socket.IO as simulated demo market data (see
+  // backend/utils/priceSimulator.js) - not a real price feed. Falls back
+  // to the static base price until the first tick arrives.
+  const liveWatchlist = watchlist.map((stock) => ({
+    ...stock,
+    price: livePrices[stock.name] ?? stock.price,
+  }));
+
+  const filteredWatchlist = liveWatchlist.filter((stock) =>
     stock.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
