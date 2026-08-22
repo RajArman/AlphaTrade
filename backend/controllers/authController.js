@@ -2,6 +2,7 @@ import User from "../model/UserModel.js";
 import bcrypt from "bcryptjs";
 import { createToken } from "../utils/createToken.js";
 import { signupSchema, loginSchema } from "../utils/validation.js";
+import { getDuplicateKeyField, duplicateUserMessage } from "../utils/authErrors.js";
  
 const cookieOptions = {
   httpOnly: true,
@@ -24,12 +25,14 @@ export const signup = async (req, res) => {
 
     const { email, password, username } = validation.data;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    // One query covers both unique constraints - email and username are
+    // each checked, and the message reflects whichever one collided.
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
+      const duplicateField = existingUser.email === email ? "email" : "username";
       return res.status(409).json({
         success: false,
-        message: "User already exists",
+        message: duplicateUserMessage(duplicateField),
       });
     }
 
@@ -58,6 +61,18 @@ export const signup = async (req, res) => {
       },
     });
   } catch (error) {
+    // Handles the race where two signups for the same email/username pass
+    // the check above at nearly the same time - the database's unique
+    // index is the real integrity guarantee; this just keeps the response
+    // a clean 409 instead of a generic 500.
+    const duplicateField = getDuplicateKeyField(error);
+    if (duplicateField) {
+      return res.status(409).json({
+        success: false,
+        message: duplicateUserMessage(duplicateField),
+      });
+    }
+
     console.error("Signup error:", error);
     console.error("Error stack:", error.stack);
     console.error("Error name:", error.name);
