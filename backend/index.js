@@ -25,6 +25,11 @@ import {
 import { calculateTotalCost, calculateWeightedAverage } from "./utils/tradeMath.js";
 import { calculatePortfolioTotals, calculateTotalAccountValue } from "./utils/portfolioMath.js";
 import { createInitialPriceState, generatePriceTick } from "./utils/priceSimulator.js";
+import {
+  getCachedDashboardSummary,
+  setCachedDashboardSummary,
+  invalidateDashboardSummary,
+} from "./utils/cache.js";
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
@@ -185,6 +190,13 @@ app.use(cookieParser());
 
 app.get("/dashboardSummary", verifyUser, async (req, res) => {
   try {
+    const userId = req.user._id.toString();
+
+    const cachedSummary = await getCachedDashboardSummary(userId);
+    if (cachedSummary) {
+      return res.json(cachedSummary);
+    }
+
     const holdings = await HoldingsModel.find({ user: req.user._id });
 
     const totalHoldings = holdings.length;
@@ -195,7 +207,7 @@ app.get("/dashboardSummary", verifyUser, async (req, res) => {
     const availableMargin = getUserBalance(req.user);
     const totalAccountValue = calculateTotalAccountValue(availableMargin, totalCurrentValue);
 
-    res.json({
+    const summary = {
       success: true,
       totalHoldings,
       investment: totalInvested,
@@ -206,7 +218,12 @@ app.get("/dashboardSummary", verifyUser, async (req, res) => {
       marginsUsed: 0,
       openingBalance: DEFAULT_STARTING_BALANCE,
       totalAccountValue,
-    });
+    };
+
+    // Only successful summaries are ever cached.
+    await setCachedDashboardSummary(userId, summary);
+
+    res.json(summary);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -304,6 +321,12 @@ app.post("/newOrder", verifyUser, async (req, res) => {
         await existingHolding.save({ session });
       }
     });
+
+    // Transaction has committed at this point - invalidate only now, and
+    // never before, so a failed/rolled-back buy can't wipe a still-valid
+    // cached summary. invalidateDashboardSummary never throws, so a Redis
+    // problem here can't turn this successful buy into a failed response.
+    await invalidateDashboardSummary(req.user._id.toString());
 
     res.json({
       success: true,
@@ -411,6 +434,11 @@ app.post("/sellOrder", verifyUser, async (req, res) => {
 
       await sellOrder.save({ session });
     });
+
+    // Same rule as /newOrder: only invalidate after the transaction has
+    // actually committed, and a Redis failure here can't turn this
+    // successful sell into a failed response.
+    await invalidateDashboardSummary(req.user._id.toString());
 
     res.json({
       success: true,
