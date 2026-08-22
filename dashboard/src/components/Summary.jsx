@@ -73,6 +73,10 @@ useEffect(() => {
             <p>
               Opening balance <span>{formatNumber(summary.openingBalance)}</span>
             </p>
+
+            <p>
+              Total account value <span>{formatNumber(summary.totalAccountValue)}</span>
+            </p>
           </div>
         </div>
 

@@ -22,6 +22,7 @@ import {
   InsufficientHoldingsError,
 } from "./utils/tradeErrors.js";
 import { calculateTotalCost, calculateWeightedAverage } from "./utils/tradeMath.js";
+import { calculatePortfolioTotals, calculateTotalAccountValue } from "./utils/portfolioMath.js";
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
@@ -224,29 +225,23 @@ app.get("/dashboardSummary", verifyUser, async (req, res) => {
 
     const totalHoldings = holdings.length;
 
-    const investment = holdings.reduce((sum, stock) => {
-      return sum + stock.avg * stock.qty;
-    }, 0);
+    const { totalInvested, totalCurrentValue, totalProfitLoss, totalProfitLossPercent } =
+      calculatePortfolioTotals(holdings);
 
-    const currentValue = holdings.reduce((sum, stock) => {
-      return sum + stock.price * stock.qty;
-    }, 0);
-
-    const profitLoss = currentValue - investment;
-
-    const profitLossPercent =
-      investment > 0 ? (profitLoss / investment) * 100 : 0;
+    const availableMargin = getUserBalance(req.user);
+    const totalAccountValue = calculateTotalAccountValue(availableMargin, totalCurrentValue);
 
     res.json({
       success: true,
       totalHoldings,
-      investment,
-      currentValue,
-      profitLoss,
-      profitLossPercent,
-      availableMargin: getUserBalance(req.user),
+      investment: totalInvested,
+      currentValue: totalCurrentValue,
+      profitLoss: totalProfitLoss,
+      profitLossPercent: totalProfitLossPercent,
+      availableMargin,
       marginsUsed: 0,
       openingBalance: DEFAULT_STARTING_BALANCE,
+      totalAccountValue,
     });
   } catch (error) {
     res.status(500).json({
