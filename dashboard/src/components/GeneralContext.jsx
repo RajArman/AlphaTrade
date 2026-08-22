@@ -15,6 +15,9 @@ const GeneralContext = createContext({
   holdings: [],
   orders: [],
   balance: 0,
+  summary: null,
+  isInitialLoading: true,
+  hasError: false,
 });
 
 export const GeneralContextProvider = (props) => {
@@ -27,6 +30,9 @@ export const GeneralContextProvider = (props) => {
   const [holdings, setHoldings] = useState([]);
   const [orders, setOrders] = useState([]);
   const [balance, setBalance] = useState(0);
+  const [summary, setSummary] = useState(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   const handleOpenBuyWindow = (uid) => {
     setIsBuyWindowOpen(true);
@@ -76,9 +82,15 @@ export const GeneralContextProvider = (props) => {
 
       if (summaryRes.data.success) {
         setBalance(summaryRes.data.availableMargin);
+        setSummary(summaryRes.data);
       }
+
+      setHasError(false);
     } catch (err) {
       console.error("Error fetching data in Context:", err);
+      setHasError(true);
+    } finally {
+      setIsInitialLoading(false);
     }
   };
 
@@ -103,6 +115,9 @@ export const GeneralContextProvider = (props) => {
         holdings,
         orders,
         balance,
+        summary,
+        isInitialLoading,
+        hasError,
       }}
     >
       {props.children}

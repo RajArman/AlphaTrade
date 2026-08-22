@@ -1,9 +1,11 @@
 import { useEffect, useState, useContext } from "react";
 import { VerticalGraph } from "./VerticalGraph";
 import GeneralContext from "./GeneralContext";
+import Loading from "./Loading";
+import ErrorState from "./ErrorState";
 
 const Holdings = () => {
-  const { holdings } = useContext(GeneralContext);
+  const { holdings, isInitialLoading, hasError } = useContext(GeneralContext);
 
   const [portfolioSummary, setPortfolioSummary] = useState({
     totalInvestment: 0,
@@ -48,6 +50,14 @@ const Holdings = () => {
       },
     ],
   };
+
+  if (isInitialLoading) {
+    return <Loading />;
+  }
+
+  if (hasError) {
+    return <ErrorState />;
+  }
 
   return (
     <>

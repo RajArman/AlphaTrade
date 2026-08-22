@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import GeneralContext from "./GeneralContext";
 import { useContext } from "react";
+import Loading from "./Loading";
+import ErrorState from "./ErrorState";
 
 const Orders = () => {
-  const { orders } = useContext(GeneralContext);
+  const { orders, isInitialLoading, hasError } = useContext(GeneralContext);
 
   const formatNumber = (num) =>
     Number(num || 0).toLocaleString("en-IN", {
@@ -20,6 +22,14 @@ const Orders = () => {
       minute: "2-digit",
     });
   };
+
+  if (isInitialLoading) {
+    return <Loading />;
+  }
+
+  if (hasError) {
+    return <ErrorState />;
+  }
 
   return (
     <div className="orders">

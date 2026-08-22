@@ -1,37 +1,11 @@
-import { useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { useContext } from "react";
 import GeneralContext from "./GeneralContext";
 import Loading from "./Loading";
+import ErrorState from "./ErrorState";
 
 const Summary = () => {
-  const { user, orders } = useContext(GeneralContext);
-  const [summary, setSummary] = useState(null);
-
-useEffect(() => {
-  const fetchSummary = async () => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const { data } = await axios.get(
-        "https://alpha-trade-iota.vercel.app/dashboardSummary",
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (data.success) {
-        setSummary(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch summary:", error);
-    }
-  };
-
-  fetchSummary();
-}, []);
+  const { user, orders, summary, isInitialLoading, hasError } =
+    useContext(GeneralContext);
 
   const formatNumber = (num) => {
     if (num === undefined || num === null) return "0";
@@ -52,9 +26,14 @@ useEffect(() => {
     });
   };
 
-  if (!summary) {
-  return <Loading />;
-}
+  if (isInitialLoading) {
+    return <Loading />;
+  }
+
+  if (hasError || !summary) {
+    return <ErrorState />;
+  }
+
   return (
     <>
       <div className="username">
