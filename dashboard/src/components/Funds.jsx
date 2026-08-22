@@ -17,14 +17,22 @@ const Funds = () => {
           Manage your trading balance and available funds.
         </p>
 
-        <button className="btn btn-green">Add Funds</button>
+        <button className="btn btn-green" disabled title="Coming soon">
+          Add Funds
+        </button>
 
         <button
           className="btn btn-blue"
           style={{ marginLeft: "10px" }}
+          disabled
+          title="Coming soon"
         >
           Withdraw
         </button>
+
+        <p style={{ color: "#999", fontSize: "0.85rem", marginTop: "8px" }}>
+          Adding and withdrawing funds is coming soon.
+        </p>
       </div>
 
       <div className="row">

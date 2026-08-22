@@ -7,12 +7,15 @@ import { API_BASE_URL } from "../config";
 import "./BuyActionWindow.css"; // reuse same css for now
 
 const SellActionWindow = ({ uid }) => {
+  const { closeSellWindow, triggerRefresh, livePrices } = useContext(GeneralContext);
+
   const [stockQuantity, setStockQuantity] = useState(1);
-  const [stockPrice, setStockPrice] = useState(0.0);
+  // Seeded once from the live simulated price when this window mounts (it's
+  // conditionally rendered, so a fresh instance is created each time it
+  // opens) - later Socket.IO ticks never overwrite it, so manual edits stick.
+  const [stockPrice, setStockPrice] = useState(() => livePrices[uid] ?? 0);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { closeSellWindow, triggerRefresh } = useContext(GeneralContext);
 
 const handleSellClick = async () => {
   const qty = Number(stockQuantity);
@@ -66,6 +69,16 @@ const handleSellClick = async () => {
     closeSellWindow();
   };
 
+  // Honest order value from the form's own qty/price state - this project
+  // has no margin/leverage trading, so this replaces the old static fake
+  // "Margin required" text rather than inventing a real margin calculation.
+  const orderValueQty = Number(stockQuantity);
+  const orderValuePrice = Number(stockPrice);
+  const orderValue =
+    Number.isFinite(orderValueQty) && Number.isFinite(orderValuePrice)
+      ? orderValueQty * orderValuePrice
+      : 0;
+
   return (
     <div className="container" id="sell-window" draggable="true">
       <div className="regular-order">
@@ -98,7 +111,7 @@ const handleSellClick = async () => {
       </div>
 
       <div className="buttons">
-        <span>Margin required ₹140.65</span>
+        <span>Order value: ₹{orderValue.toFixed(2)}</span>
         <div>
           <button
             className="btn btn-red"

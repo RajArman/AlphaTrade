@@ -73,8 +73,8 @@ const WatchList = () => {
         </div>
       ) : (
         <ul className="list">
-          {filteredWatchlist.map((stock, index) => (
-            <WatchListItem stock={stock} key={index} />
+          {filteredWatchlist.map((stock) => (
+            <WatchListItem stock={stock} key={stock.name} />
           ))}
         </ul>
       )}

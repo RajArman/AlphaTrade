@@ -58,8 +58,8 @@ const Orders = () => {
               </thead>
 
               <tbody>
-                {orders.map((order, index) => (
-                  <tr key={index}>
+                {orders.map((order) => (
+                  <tr key={order._id}>
                     <td>{formatDate(order.createdAt)}</td>
                     <td>{order.name}</td>
                     <td>{order.qty}</td>

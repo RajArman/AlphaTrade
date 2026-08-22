@@ -90,7 +90,7 @@ const Holdings = () => {
           </thead>
 
           <tbody>
-            {holdings.map((stock, index) => {
+            {holdings.map((stock) => {
               const curValue = stock.price * stock.qty;
               const profitLoss = curValue - stock.avg * stock.qty;
               const isProfit = profitLoss >= 0;
@@ -98,7 +98,7 @@ const Holdings = () => {
               const dayClass = stock.day >= 0 ? "profit" : "loss";
 
               return (
-                <tr key={index}>
+                <tr key={stock._id}>
                   <td>{stock.name}</td>
                   <td>{stock.qty}</td>
                   <td>{formatNumber(stock.avg)}</td>

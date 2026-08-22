@@ -128,8 +128,8 @@ const Summary = () => {
               </thead>
 
               <tbody>
-                {recentOrders.map((order, index) => (
-                  <tr key={index}>
+                {recentOrders.map((order) => (
+                  <tr key={order._id}>
                     <td>{formatDate(order.createdAt)}</td>
                     <td>{order.name}</td>
                     <td>{order.qty}</td>
