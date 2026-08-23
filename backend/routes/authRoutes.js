@@ -11,6 +11,14 @@ const router = Router();
 // counters and still throttles either being hammered from one IP. Uses
 // express-rate-limit's default in-memory store; no Redis/distributed store
 // needed at this scope.
+//
+// Known limitation: an in-memory store only counts requests handled by the
+// same process, so this is fully effective on a persistent server (e.g.
+// `npm start`), but on the current Vercel serverless deployment - where
+// there's no guaranteed instance affinity between requests - it doesn't
+// provide reliable rate limiting across invocations. Making that reliable
+// would mean a shared store (e.g. Redis-backed), which is intentionally out
+// of scope here.
 const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: 10,

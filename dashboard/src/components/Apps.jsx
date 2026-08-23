@@ -1,8 +1,10 @@
 import { useContext } from "react";
 import GeneralContext from "./GeneralContext";
+import Loading from "./Loading";
+import ErrorState from "./ErrorState";
 
 const Apps = () => {
-  const { holdings, orders } = useContext(GeneralContext);
+  const { holdings, orders, isInitialLoading, hasError } = useContext(GeneralContext);
 
   const totalInvestment = holdings.reduce(
     (sum, stock) => sum + stock.avg * stock.qty,
@@ -63,6 +65,14 @@ const Apps = () => {
       className: totalPL >= 0 ? "profit" : "loss",
     },
   ];
+
+  if (isInitialLoading) {
+    return <Loading />;
+  }
+
+  if (hasError) {
+    return <ErrorState />;
+  }
 
   return (
     <div style={{ padding: "30px" }}>

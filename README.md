@@ -1,6 +1,6 @@
 # 📈 AlphaTrade
 
-A full-stack MERN stock trading platform featuring secure authentication, portfolio management, interactive analytics, and a modern trading dashboard.
+A full-stack MERN paper-trading platform featuring secure authentication, a virtual wallet, buy/sell execution, portfolio management, real-time simulated prices, and interactive analytics on a modern trading dashboard.
 
 ---
 
@@ -8,10 +8,17 @@ A full-stack MERN stock trading platform featuring secure authentication, portfo
 
 ### 🔐 Authentication
 - JWT-based Authentication
-- Secure Login & Signup
+- Secure Login & Signup with Duplicate Email/Username Handling
+- Rate-Limited Login & Signup (brute-force protection)
 - Protected Routes
 - Cookie-based Session Management
 - User-specific Data Isolation
+
+### 💰 Paper Trading
+- Virtual Wallet with Starting Balance
+- Buy & Sell Execution with Atomic Balance/Holding Updates
+- Transaction History
+- Portfolio Value & Profit/Loss Calculation
 
 ### 📊 Portfolio Dashboard
 - Portfolio Overview
@@ -20,12 +27,9 @@ A full-stack MERN stock trading platform featuring secure authentication, portfo
 - Funds Overview
 - Portfolio Insights
 
-### 📈 Trading
-- Buy Stocks
-- Sell Stocks
-- Automatic Holdings Update
-- Dynamic Portfolio Calculation
-- Real-time Portfolio Summary
+### ⚡ Real-Time & Caching
+- Live Simulated Stock Price Updates via Socket.IO
+- Redis Caching for Dashboard Summary (optional, with automatic MongoDB fallback)
 
 ### 📉 Analytics
 - Portfolio Performance
@@ -60,6 +64,11 @@ A full-stack MERN stock trading platform featuring secure authentication, portfo
 - Express.js
 - JWT Authentication
 - Cookie Parser
+- Zod (Validation)
+- bcryptjs (Password Hashing)
+- express-rate-limit (Auth Rate Limiting)
+- Socket.IO (Real-Time Simulated Prices)
+- Redis (Optional Caching Layer, node-redis)
 
 ## Database
 - MongoDB
@@ -86,7 +95,6 @@ AlphaTrade
 │   ├── Portfolio Dashboard
 │   ├── Holdings
 │   ├── Orders
-│   ├── Positions
 │   ├── Funds
 │   ├── Insights
 │   └── Charts
