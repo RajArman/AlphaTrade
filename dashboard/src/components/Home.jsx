@@ -47,14 +47,20 @@ const Home = () => {
   verifyUser();
 }, []);
 
+  // Redirect if not verified. Kept in its own effect (rather than during
+  // render) so it's a side effect React expects, not a render-time mutation.
+  useEffect(() => {
+    if (isVerified === false) {
+      window.location.href = "https://alpha-trade-6k67.vercel.app/login";
+    }
+  }, [isVerified]);
+
   // Show loading while verifying
  if (isVerified === null) {
   return <Loading />;
 }
 
-  // Redirect if not verified
   if (isVerified === false) {
-    window.location.href = "https://alpha-trade-6k67.vercel.app/login";
     return null;
   }
 

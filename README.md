@@ -1,5 +1,7 @@
 # 📈 AlphaTrade
 
+[![CI](https://github.com/RajArman/AlphaTrade/actions/workflows/ci.yml/badge.svg)](https://github.com/RajArman/AlphaTrade/actions/workflows/ci.yml)
+
 A full-stack MERN paper-trading platform featuring secure authentication, a virtual wallet, buy/sell execution, portfolio management, real-time simulated prices, and interactive analytics on a modern trading dashboard.
 
 ---
@@ -166,7 +168,7 @@ npm run dev
 
 # 🔑 Environment Variables
 
-Create a `.env` file inside the backend folder.
+Copy `backend/.env.example` to `backend/.env` and fill in real values.
 
 ```env
 PORT=3002
@@ -182,6 +184,11 @@ REDIS_URL=your_redis_connection_string
 - Leave `NODE_ENV` unset (or set it to `development`) for local development.
   The local Express server and Socket.IO real-time price stream only start
   when `NODE_ENV` is not `"production"`.
+
+The dashboard also has an optional `dashboard/.env.example` for overriding
+the backend API/Socket.IO URLs (`VITE_API_URL`, `VITE_SOCKET_URL`); both
+have working defaults, so this is only needed to point the dashboard at a
+different backend.
 
 ---
 
