@@ -116,9 +116,10 @@ npm test
 
 ## ⚙️ CI Pipeline
 
-A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push and pull request, with three independent jobs:
+A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push and pull request targeting `main`, with four independent jobs:
 
-- **backend** — install, run the test suite, generate a coverage report
+- **backend-unit** — install, run the 74 unit tests with coverage
+- **backend-integration** — install, run the 24 Supertest/mongodb-memory-server integration tests (no external MongoDB service or secrets required)
 - **dashboard** — install, lint, production build
 - **frontend** — install, run tests, lint, production build
 

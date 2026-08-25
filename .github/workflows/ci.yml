@@ -2,11 +2,13 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
 
 jobs:
-  backend:
-    name: Backend
+  backend-unit:
+    name: Backend Unit Tests
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -22,11 +24,37 @@ jobs:
 
       - run: npm ci
 
-      - name: Run tests
-        run: npm test
-
-      - name: Run tests with coverage
+      - name: Run unit tests with coverage
         run: node --test --experimental-test-coverage tests/*.test.js
+
+  backend-integration:
+    name: Backend Integration Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - run: npm ci
+
+      # mongodb-memory-server downloads a real MongoDB binary on first use;
+      # caching it keeps repeat CI runs fast without any external MongoDB
+      # service or secrets - the tests are fully self-contained.
+      - name: Cache mongodb-memory-server binaries
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: ${{ runner.os }}-mongodb-binaries
+
+      - name: Run integration tests
+        run: npm run test:integration
 
   dashboard:
     name: Dashboard
