@@ -45,7 +45,8 @@ The project is split into three independent apps: a marketing/auth site (`fronte
 - Auth-scoped rate limiting on signup/login
 
 ### Testing
-- **Backend** — Node.js's built-in test runner (`node:test`), no external testing framework
+- **Backend unit tests** — Node.js's built-in test runner (`node:test`), no external testing framework
+- **Backend integration tests** — Vitest + Supertest + `mongodb-memory-server` (real in-memory MongoDB)
 - **Marketing site** — Vitest + React Testing Library
 
 ### CI
@@ -62,7 +63,8 @@ AlphaTrade
 │   ├── routes/            # Express route definitions
 │   ├── middlewares/    # JWT auth middleware
 │   ├── utils/               # Validation, trade math, caching, price simulation
-│   └── tests/               # node:test unit tests
+│   ├── tests/                # node:test unit tests
+│   └── test/                  # Vitest + Supertest integration tests
 │
 ├── dashboard                 # Trading dashboard (post-login app)
 │   └── src/components/    # Holdings, Orders, Summary, Buy/Sell windows, etc.
@@ -75,7 +77,7 @@ AlphaTrade
 
 ## 🧪 Testing
 
-**Backend** — 74 tests written with Node's built-in test runner, no additional testing framework or dependency. They cover:
+**Backend unit tests** — 74 tests written with Node's built-in test runner, no additional testing framework or dependency. They cover:
 - Buy/sell validation, atomic balance/holdings math, and weighted average cost calculation
 - Portfolio value and profit/loss calculations
 - Wallet defaults and legacy-user balance handling
@@ -90,6 +92,19 @@ npm test
 
 # with coverage
 node --test --experimental-test-coverage tests/*.test.js
+```
+
+**Backend integration tests** — 24 tests using Vitest + Supertest against the real Express app, backed by a real in-memory MongoDB replica set (`mongodb-memory-server`, required since buy/sell rely on MongoDB transactions). They exercise full HTTP request/response cycles rather than isolated functions, covering:
+- Signup/login, password hashing, and duplicate-account rejection
+- Protected-route auth enforcement, including that one user can never see another user's holdings
+- End-to-end buy/sell execution: balance changes, weighted-average recalculation, insufficient-balance and overselling rejection, and order history/dashboard summary reflecting real trades
+
+```bash
+cd backend
+npm run test:integration
+
+# with coverage
+npm run test:integration:coverage
 ```
 
 **Marketing site** — a Vitest + React Testing Library test for the landing page's Hero component. Run with:

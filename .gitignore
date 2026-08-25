@@ -16,6 +16,10 @@ build/
 frontend/dist/
 dashboard/dist/
 
+# test coverage output
+coverage/
+backend/coverage/
+
 # local files
 .vscode/
 .DS_Store
