@@ -14,7 +14,7 @@ The project is split into three independent apps: a marketing/auth site (`fronte
 
 ## ✨ Features
 
-- **Authentication** — JWT-based signup/login/logout, bcrypt password hashing, rate-limited auth endpoints, and clear duplicate email/username handling
+- **Authentication** — JWT-based signup/login/logout, bcrypt password hashing, rate-limited auth endpoints, and clear duplicate email/username handling; every trading request is scoped to the authenticated user, so one account can never read or modify another's data
 - **Virtual wallet** — every new account starts with a simulated balance used for all trading
 - **Buy & sell execution** — quantity/price validation, atomic balance and holdings updates (a trade can't partially apply), insufficient-balance and overselling protection
 - **Holdings & weighted average cost** — repeated buys of the same stock correctly recompute the average buy price
@@ -77,6 +77,8 @@ AlphaTrade
 
 ## 🧪 Testing
 
+**98 backend tests total** (74 unit + 24 integration).
+
 **Backend unit tests** — 74 tests written with Node's built-in test runner, no additional testing framework or dependency. They cover:
 - Buy/sell validation, atomic balance/holdings math, and weighted average cost calculation
 - Portfolio value and profit/loss calculations
@@ -93,6 +95,8 @@ npm test
 # with coverage
 node --test --experimental-test-coverage tests/*.test.js
 ```
+
+This covers ~98% of the core trading/portfolio calculation logic these unit tests target (the `utils/` and `model/` layers) — not a claim about overall backend coverage, which is measured separately below.
 
 **Backend integration tests** — 24 tests using Vitest + Supertest against the real Express app, backed by a real in-memory MongoDB replica set (`mongodb-memory-server`, required since buy/sell rely on MongoDB transactions). They exercise full HTTP request/response cycles rather than isolated functions, covering:
 - Signup/login, password hashing, and duplicate-account rejection
@@ -196,7 +200,7 @@ npm run dev
 
 ## 🧠 Engineering Highlights
 
-- **Atomic trade execution** — buy and sell orders run inside MongoDB transactions, so a partial failure can never leave the wallet, holdings, and order history out of sync with each other
+- **Atomic, concurrency-safe trade execution** — buy and sell orders run inside MongoDB transactions, so a partial failure can never leave the wallet, holdings, and order history out of sync with each other; balance and holding updates use atomic conditional queries (`$gte`/`$inc` in a single operation), so two concurrent requests can't overdraw a balance or oversell a holding
 - **Cache with a real fallback path** — the Redis caching layer is written so its client is injectable, letting the hit/miss/failure logic be unit-tested without a live Redis instance, and the app functions identically with Redis absent
 - **Race-safe account creation** — signup checks for duplicate email/username up front, and separately handles the database-level unique-constraint error as a fallback for near-simultaneous requests
 - **Real-time price stream scoped to where it works** — Socket.IO runs on the persistent Node process used for local development; the code and docs are explicit that it does not run on the serverless deployment, rather than silently pretending it does
